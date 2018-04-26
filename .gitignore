@@ -1,0 +1,13 @@
+*.aux
+*.log
+*.out
+*.synctex
+*.synctex
+*.blg
+*.bbl
+*.synctex.gz
+emnlp2018.pdf
+*.synctex(busy)
+*.DS_Store
+other
+backup
