@@ -1,3 +1,28 @@
 \section{Introduction}
 
-TBD
+What is relation extracion (RE)?
+Why is RE important (e.g., basis of knowledge base population, deeper understand of a text)?
+How is RE often appraoched? Give an example.
+
+
+Apart from the textual information in the sentence, prior knowledge on the constraints of each relation is also important.
+Follow the previous example, explain why constraints is useful.
+However, most of the existing RE methods ignores this information.
+Probably because of no off-the-shelf resources for these clues.
+
+How these constraints are handled by clw?
+What's the weakness of clw? 
+Weakness: 
+(1) Need postprocessing on a large number of predictions $\rightarrow$ high delay.
+(2) Time consuming for large numer of predictions.
+(3) clw's model operates on sentence level, which kind of deviates the multi-instance learning procedure, and therefore may introduce some performance drop.
+
+We propose to incorporate these constraints by introducing an additional loss during training, and the test phase incurs no extra costs.
+Specifically, the loss penalizes inconsistent predictions during training.
+In this way, the classification boundary is made more clear and discriminative $\rightarrow$ better generalization.
+Since we only add a loss term, our framework is compatible to most of the relation extractors that uses gradient descent.
+Further, the extra cost only reside in the training procedure, and the test is as efficient as before.
+We conduct experiments on English and Chinese datasets.
+The experimental results show that our method can clearly improve the base model, and is superior to clw's method.
+Mention the simplified version?
+
