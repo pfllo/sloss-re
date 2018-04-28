@@ -18,7 +18,8 @@ Weakness:
 (3) clw's model operates on sentence level, which kind of deviates the multi-instance learning procedure, and therefore may introduce some performance drop.
 
 We propose to incorporate these constraints by introducing an additional loss during training, and the test phase incurs no extra costs.
-Specifically, the loss penalizes inconsistent predictions during training.
+Specifically, we use the semantic loss framework to convert the constraints into a loss term.
+The loss penalizes inconsistent predictions during training.
 In this way, the classification boundary is made more clear and discriminative $\rightarrow$ better generalization.
 Since we only add a loss term, our framework is compatible to most of the relation extractors that uses gradient descent.
 Further, the extra cost only reside in the training procedure, and the test is as efficient as before.
