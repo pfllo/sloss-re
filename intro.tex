@@ -4,8 +4,10 @@ Relation extraction (\RE) aims at identifying relations between pairs of entitie
 
 In the literature, \RE is usually investigated in the distant supervision (\DS) paradigm, where datasets are automatically constructed by aligning existing \KB \emph{(subject, relation, object)} triples with a large corpus, and considers sentences containing the subject and object entity in a triple as evidence for the corresponding relation~\cite{riedel2010modeling}.
 To alleviate the sentence level noise in the automatically constructed dataset, \RE is often considered in the multi-instance learning framework where all the sentences containing the target subject and object are packed into a \textbf{\emph{sentence bag}}, and relation extractors take in these sentences to predict the relations for the entity pair. 
-Following this framework, methods like graphic model~\cite{surdeanu2012multi}, neural network~\cite{lin2016neural} have been successfully used.
-%In the literature, \RE is usually investigated in a classification style, where the classifier takes in sentences containing the mentions of the target entity pair, and output the predicted relations between them~\cite{surdeanu2012multi,zeng2015distant,lin2016neural}.
+Following this framework, Zeng et al.~\shortcite{zeng2015distant} uses piecewise convolutional neural network (\PCNN) to handle the extraction task, Lin et al.~\shortcite{lin2016neural} introduces attention mechanism for better noise tolerence,
+%methods like graphic model~\cite{surdeanu2012multi}, neural network~\cite{lin2016neural} have been successfully used,
+Ye et al.~\shortcite{ye2017jointly} makes further improvements by learning co-occurence tendency between relations via learning to rank.
+%In the literature, \RE is usually investigated in a classification style, where the classifier takes in sentences containing the mentions of the target entity pair, and output the predicted relations between them~\cite{hoffmann2011knowledge,surdeanu2012multi,zeng2015distant,lin2016neural}.
 
 Typically, most existing relation extractors relies only on input sentences to make predictions, and ignores the constraints required by each relation.
 Take the relation \emph{Capital} for example, it would expect its subject to be a country and its object to be a city.
