@@ -1,29 +1,31 @@
 \section{Introduction}
 
-What is relation extracion (RE)?
-Why is RE important (e.g., basis of knowledge base population, deeper understand of a text)?
-How is RE often appraoched? Give an example.
+Relation extraction (\RE) aims at identifying relations between pairs of entities from raw text, and its success can benefit  many knowledge base (\KB) related tasks like \KB population, question answering (\QA) and etc~\cite{suchanek2013advances}.
 
+In the literature, \RE is usually investigated in the distant supervision (\DS) paradigm, where datasets are automatically constructed by aligning existing \KB \emph{(subject, relation, object)} triples with a large corpus, and considers sentences containing the subject and object entity in a triple as evidence for the corresponding relation~\cite{riedel2010modeling}.
+To alleviate the sentence level noise in the automatically constructed dataset, \RE is often considered in the multi-instance learning framework where all the sentences containing the target subject and object are packed into a \textbf{\emph{sentence bag}}, and relation extractors take in these sentences to predict the relations for the entity pair. 
+Following this framework, methods like graphic model~\cite{surdeanu2012multi}, neural network~\cite{lin2016neural} have been successfully used.
+%In the literature, \RE is usually investigated in a classification style, where the classifier takes in sentences containing the mentions of the target entity pair, and output the predicted relations between them~\cite{surdeanu2012multi,zeng2015distant,lin2016neural}.
 
-Apart from the textual information in the sentence, prior knowledge on the constraints of each relation is also important.
-Follow the previous example, explain why constraints is useful.
-However, most of the existing RE methods ignores this information.
-Probably because of no off-the-shelf resources for these clues.
+Typically, most existing relation extractors relies only on input sentences to make predictions, and ignores the constraints required by each relation.
+Take the relation \emph{Capital} for example, it would expect its subject to be a country and its object to be a city.
+And in most cases, it also expects a city to be the capital of only one country.
+This kind of constraints can help us identify inconsistent predictions and thereby improve the extraction results.
 
-How these constraints are handled by clw?
-What's the weakness of clw~\cite{chen2014encoding}? 
-Weakness: 
-(1) Need postprocessing on a large number of predictions $\rightarrow$ high delay.
-(2) Time consuming for large numer of predictions.
-(3) clw's model operates on sentence level, which kind of deviates the multi-instance learning procedure, and therefore may introduce some performance drop.
+However, properly utilizing these clues is non-trivial, since many \KBs do not have a well-defined typing system or a cardinality specification for relations.
+Chen et al~\shortcite{chen2014encoding} evades this difficulty by implicitly mining such requirements from data.
+Specifically, while collecting cardinality requirements directly from data, they evades the tricky argument type constraints by collecting relations pairs that can not share the same subject or object instead, which implicitly captures the argument type requirement.
+After that, they collects all the extraction results, and uses integer linear programming (\ILP) to resolve the inconsistencies.
+However, since \ILP operates on the post-processing phase, their method typically requires more time during prediction, and introduces high delay to the use of the extraction results since we need to wait for all the extractions to complete before the ILP step.
+%which is inappropirate for downstream applications like \QA that need to use the \RE result immediately when 
+%clw's model operates on sentence level, which kind of deviates the multi-instance learning procedure, and therefore may introduce some performance drop.
 
-We propose to incorporate these constraints by introducing an additional loss during training, and the test phase incurs no extra costs.
-Specifically, we use the semantic loss framework to convert the constraints into a loss term.
-The loss penalizes inconsistent predictions during training.
-In this way, the classification boundary is made more clear and discriminative $\rightarrow$ better generalization.
-Since we only add a loss term, our framework is compatible to most of the relation extractors that uses gradient descent.
-Further, the extra cost only reside in the training procedure, and the test is as efficient as before.
-We conduct experiments on English and Chinese datasets.
-The experimental results show that our method can clearly improve the base model, and is superior to clw's method.
-Mention the simplified version?
+To overcome the problems of the \ILP method, we propose to incorporate these constraints by introducing an additional loss during training, and the test phase thus incurs no extra costs.
+Specifically, we format argument type and cardinality constraints into boolean expressions, and use the semantic loss framework~\cite{xu2017semantic} to convert the constraints into a loss term, which penalizes inconsistent predictions during training.
+In this way, the classification boundary is made more discriminative and therefore lead to better generalization ability of the model.
+Since we only add a loss term to the base model, our method is plug-and-play for most relation extraction models.
+% Further, the extra cost only reside in the training procedure, and the test is as efficient as before.
+We conduct experiments on both English and Chinese datasets,
+and the experimental results show that our method can clearly improve the base model, and delivers superior performance compared to the \ILP method.
+%Mention the simplified version?
 
