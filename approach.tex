@@ -1,17 +1,53 @@
 \section{Our Approach}
 %Briefly introduce the whole framework, and refer to each subsection one by one.
-\cite{xu2017semantic}  encodes the symbolic knowledge in Boolean logic, and derives a semantic loss to make the neural network automatically learn the symbolic knowledge. Their experiments show that the semantic loss helps to reduce the constraint violation and gives significant practical improvements in semi-supervised classification. 
+In this section, we describe a novel loss term that incorporates the argument type and cardinality constraints required by each relation,
+which significantly increases the quality of relation extraction results with only moderate extra cost during training.
+Before delving into the details of our method (Sec.~\ref{sec:loss_term}), we will first briefly introduce our base relation extraction model (Sec.~\ref{sec:base_model}), and the constraints that we will use as well (Sec.~\ref{sec:constraints}).
 
-Inspired by their work, we encode the constraints in \cite{chen2014encoding} to boolean logic, and add a semantic loss to the neural network.
 
-\subsection{Argument Type Constraints}
+
+
+
+\subsection{Base Model}
+\label{sec:base_model}
+%Briefly introduce the base model (PCNN).
+Although our loss term is compatible to most existing relation extractors, in this paper, we take the attentive piecewise convolutional neural network (\APCNN)~\cite{lin2016neural} as our base model, which is currently one of the most widely used extractor in the relation extraction task.
+
+Specifically, \APCNN operates in the \MIL framework that takes in all the sentences mentioning the target subject and object, and output the relations between these two entities.
+We first use the piecewise convolutional neural network (\PCNN)~\cite{zeng2015distant} to obtain the embedding of each sentence.
+Then, an attention layer is applied to these sentence embeddings to selectively aggregate them into a sentence bag embedding, which is then fed to a softmax classifier to generate the predicted relation distribution, $\textbf{p}$.
+
+%First, we concatenate the word embeddings and position embeddings of each word in one sentence, the position embeddings indicates how close each word is to head or tail entities. Then, we use a convolutional layer with window size 3, a max pooling layer and a non-linear layer to merge all these features and get the representation of one sentence.Then a selective attention is done over a bag of sentences to get the bag representation.
+
+
+\subsection{Relation Constraints}
+\label{sec:constraints}
 %Describe clw's argument type constraints
 %只介绍两类规则，一类是不同关系主体客体的约束，一类是相同关系主体客体的约束
-\cite{chen2014encoding} derives 2 kinds of constraints (Types Constraints, Cardinality Constraints) from an existing KB to implicitly capture the expected type and cardinality requirements for a relation's arguments. 
-\paragraph{Implicit Argument Types Inconsistencies:}
-Generally, the argument types of the correct predictions should be consistent with each other. If the predictions among different entity tuples require the same entity to belong to different types, this is called an argument type inconsistency. Take \textless USA, New York\textgreater and \textless USA, Washington D.C.\textgreater as an example. We couldn't predict two relations for them which has different Subject types, such as $ LargestCity $ and $ LocationCity $.
 
-\paragraph{Violations of Arguments' Uniqueness:}
+%\cite{xu2017semantic}  encodes the symbolic knowledge in Boolean logic, and derives a semantic loss to make the neural network automatically learn the symbolic knowledge. Their experiments show that the semantic loss helps to reduce the constraint violation and gives significant practical improvements in semi-supervised classification. 
+
+%Inspired by their work, we encode the constraints in \cite{chen2014encoding} to boolean logic, and add a semantic loss to the neural network.
+
+Following Chen et al.~\shortcite{chen2014encoding}, we derive type and cardinality constraints from an existing KB to implicitly capture the expected type and cardinality requirements for the arguments of a relation. 
+%\paragraph{Implicit Argument Types Inconsistencies:}
+\paragraph{Type Constraint}
+%Due to the lack of well-defined typing systems in most \KBs, determining the expected argument type of each relation with appropriate granularity is usually a hard problem.
+%Generally, the argument types of the correct predictions should be consistent with each other.
+Similar to Chen et al.~\shortcite{chen2014encoding}, we also use entity sharing between relations to implicitly capture the expected argument type of each relation.
+Specifically, if the subject set of relation $R_1$ in \KB has a large intersection with those in $R_2$, then we consider $R_1$ and $R_2$ have the same expected subject type. 
+We thereby collect relation paris that have the same subject type ($\textbf{C}^s$), object type ($\textbf{C}^o$), and relation pairs whose subject type of $R_1$ is the same as the object type of $R_2$($C^{so}$).
+%finding relation pairs that can share the same subject ($C^s$), object ($C^o$), and those where the subject of one relation can be the object of the other ($C^{so}$).
+Then, we expect the relations of all pairs of predicted \emph{(subject, relation, object)} triples to fall into $C^s$, $C^o$ or $C^{so}$ when they share the same entity in either subject or object.
+The idea is that, if the predicted relations of two triples require the same entity to belong to different types, then at least one of the prediction must be wrong.
+%The idea is that, take $C^s$ for example, if the subject set of relation $R_1$ has a large intersection with those in $R_2$ (($R_1$, $R_2$) lies in $C^s$ ), then the expected subject type of $R_1$ and $R_2$ are likely to be the same. Therefore, if a pair of predicted relation $R_1'$ and $R_2'$ for two entity pairs share the same subject, which implies $R_1'$ and $R_2'$ have the same expected subject type, then ($R_1'$, $R_2'$) must lie in $C^s$. 
+%\red{luo: Hard to explain this clearly given limited space. Maybe we can delete the intuition part.}
+
+% if the predicted relations of two entity pairs require the same entity to belong to mutually-exclusive types, then at least one of the prediction must be wrong.
+%Take \textless USA, New York\textgreater and \textless USA, Washington D.C.\textgreater as an example. We couldn't predict two relations for them which has different Subject types, such as $ LargestCity $ and $ LocationCity $.
+
+%\paragraph{Violations of Arguments' Uniqueness:}
+\paragraph{Cardinality Constraint}
 Given a subject, some relation should have unique objects, vice versa. For example, given USA as the subject of the relation Capital, we can only accept one possible object, because there is great chance that a country only have one capital.
 
 \iffalse
@@ -81,11 +117,7 @@ Here, $\bm x \models \alpha$ means that assignment $\bm x$ to variables $\bm X$ 
 To utilize \cite{chen2014encoding}'s constraints into our neural net, we transform these constraints into boolean logic just like \cite{xu2017semantic}. For example, (Subj, Obj, Subj-Obj, rel1, rel2) = (1, 0, 0, Nationality, Birthplace) is a constraint in \cite{chen2014encoding}, limiting the argument type of relations, which means that two relation $ Nationality $ and $ Birthplace $ could have the same Subject , different Object and one relation's Subject is different with other's Object. Suppose there are 5 kinds of relations: rel1, rel2=$ Nationality $, rel3, rel4=$ Birthplace $, rel5, we encode this rule with a boolean vector (1, 0, 0, 0, 1, 0, 1, 0), the first three position indicates the (Subj, Obj, Subj-Obj) information, and the last five position indicates which two relations involved in the rule. And all the boolean form of constraints in \cite{chen2014encoding} composed of  $ \alpha $ in (1).
 
 \subsection{Incorporating  Type Constraints During Training}
-
-\paragraph{Base Model}
-%Briefly introduce the base model (PCNN).
-Our baseline model refers to \cite{lin2016neural}'s CNN with selective attention model. First, we concatenate the word embeddings and position embeddings of each word in one sentence, the position embeddings indicates how close each word is to head or tail entities. Then, we use a convolutional layer with window size 3, a max pooling layer and a non-linear layer to merge all these features and get the representation of one sentence.Then a selective attention is done over a bag of sentences to get the bag representation.
-
+\label{sec:loss_term}
 \paragraph{Training Procedure}
 %How do you construct the batches?
 %What is the loss function?
