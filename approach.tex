@@ -36,9 +36,9 @@ Following Chen et al.~\shortcite{chen2014encoding}, we derive type and cardinali
 %Generally, the argument types of the correct predictions should be consistent with each other.
 Similar to Chen et al.~\shortcite{chen2014encoding}, we also use entity sharing between relations to implicitly capture the expected argument type of each relation.
 Specifically, if the subject set of relation $R_1$ in \KB has a large intersection with those in $R_2$, then we consider $R_1$ and $R_2$ have the same expected subject type. 
-We thereby collect relation paris that have the same subject type ($\textbf{C}^s$), object type ($\textbf{C}^o$), and relation pairs whose subject type of $R_1$ is the same as the object type of $R_2$($C^{so}$).
+We thereby collect relation paris that have the same subject type ($\textbf{C}^{ts}$), object type ($\textbf{C}^{to}$), and relation pairs whose subject type of $R_1$ is the same as the object type of $R_2$ ($\textbf{C}^{tso}$).
 %finding relation pairs that can share the same subject ($C^s$), object ($C^o$), and those where the subject of one relation can be the object of the other ($C^{so}$).
-Then, we expect the relations of all pairs of predicted \emph{(subject, relation, object)} triples to fall into $C^s$, $C^o$ or $C^{so}$ when they share the same entity in either subject or object.
+Then, we expect the relations of all pairs of predicted \emph{(subject, relation, object)} triples to fall into $\textbf{C}^{ts}$, $\textbf{C}^{to}$ or $\textbf{C}^{tso}$ when they share the same entity in either subject or object.
 The idea is that, if the predicted relations of two triples require the same entity to belong to different types, then at least one of the prediction must be wrong.
 %The idea is that, take $C^s$ for example, if the subject set of relation $R_1$ has a large intersection with those in $R_2$ (($R_1$, $R_2$) lies in $C^s$ ), then the expected subject type of $R_1$ and $R_2$ are likely to be the same. Therefore, if a pair of predicted relation $R_1'$ and $R_2'$ for two entity pairs share the same subject, which implies $R_1'$ and $R_2'$ have the same expected subject type, then ($R_1'$, $R_2'$) must lie in $C^s$. 
 %\red{luo: Hard to explain this clearly given limited space. Maybe we can delete the intuition part.}
@@ -48,7 +48,11 @@ The idea is that, if the predicted relations of two triples require the same ent
 
 %\paragraph{Violations of Arguments' Uniqueness:}
 \paragraph{Cardinality Constraint}
-Given a subject, some relation should have unique objects, vice versa. For example, given USA as the subject of the relation Capital, we can only accept one possible object, because there is great chance that a country only have one capital.
+Given a subject (or object), some relations should only have one object (or subject).
+For example, the relation \emph{Capital} would expect only one object for a given subject.
+Following this observation, we collect relations that can have multiple objects ($\textbf{C}^{co}$) or subjects ($\textbf{C}^{cs}$), and expect the predicted relations that have multiple objects (or subjects) for a given subject (or object) to fall into $\textbf{C}^{co}$ (or $\textbf{C}^{cs}$).
+
+% For example, given USA as the subject of the relation Capital, we can only accept one possible object, because there is great chance that a country only have one capital.
 
 \iffalse
 \begin{table}[!t]  
@@ -97,27 +101,31 @@ Obj-Uni:$o_1 \neq o_2 \quad when \quad r_1 = r_2 \wedge s_1 = s_2$
 %Subj-Cons: $r_1$ and $r_2$ can't have same subject. Obj-Cons means $r_1$ and $r_2$ can't have same object. Subj-Obj-Cons means $r_1$'s subject can't be $r_2$'s object or $r_2$'s subject can't be $r_1$'s object. Subj-Uni means if $r_1$ equals $r_2$, 
 
 
-\subsection{Semantic Loss}
-%Describe semantic loss, and how to encode clw's constraints into semantic loss.
-\cite{xu2017semantic}  encode the symbolic knowledge in Boolean logic, and derive a semantic loss to make the neural network automatically learning the symbolic knowledge. 
-%This loss function captures how close the neural network is to satisfying the constraints on its output. 
+\subsection{Incorporating  Constraints for Training}
+\label{sec:loss_term}
+In this section, we demonstrate our method of converting the relation constraints into a loss term using the semantic loss framework~\cite{xu2017semantic}.
+We also make suitable modifications to speed up the training process with only minor drop in prediction ability.
 
-The semantic loss $L^{s}(\alpha, p)$ is a function of a sentence $\alpha$ in propositional logic, defined over variables $\bm X=\{X_1,...,X_n\}$, and a vector of probabilities $p$ for the same variables $\bm X$. Element $p_i$ denotes the predicted probability of variable $X_i$, and corresponds to a single output of the neural net. 
+\paragraph{Relation Constraint Loss}
+%Describe semantic loss, and how to encode clw's constraints into semantic loss.
+Semantic loss is a general framework that can encode a propositional logic sentence as a loss term in a principled way.
+%and derive a semantic loss to make the neural network automatically learning the symbolic knowledge. 
+%This loss function captures how close the neural network is to satisfying the constraints on its output. 
+Concretely, the semantic loss $L^{s}(\alpha, p)$ is a function of a sentence $\alpha$ in propositional logic, defined as:
 %For example, the semantic loss between an exactly-one constraint $\alpha$ and a neural net output vector $p$ captures how close the prediction $p$ is to having exactly one output set to true(1), and all false(0), regardless of which output is correct.
 %We desire our semantic loss $L^{s}(\alpha, p)$ to be proportional to the negative log-probability of $\alpha$ being satisfied when sampling values according to $p$. More formally,
-In \cite{xu2017semantic}, the semantic loss function is formed as follows,
-
+%In \cite{xu2017semantic}, the semantic loss function is formed as follows,
 \begin{center}
 	$L^{s}(\alpha, p) = -log\sum\limits_{\bm x\models\alpha}\prod\limits_{i:\bm x\models X_i}p_i\prod\limits_{i:\bm x\models \neg X_i}(1-p_i)$
 \end{center}
-
-Here, $\bm x \models \alpha$ means that assignment $\bm x$ to variables $\bm X$ satisfies sentence $\alpha$, and $\bm x \models X_i$ means that $X_i$ is set to true in world $\bm x$. 
+%over variables $\bm X=\{X_1,...,X_n\}$, and a vector of probabilities $p$, where $p_i$ denotes the predicted probability of variable $X_i$: 
+where $X_i$ is a boolean variable with predicted probability $p_i$,  $\bm x \models \alpha$ refers to the assignment $\bm x$ to variables $\bm X$ that satisfies sentence $\alpha$, and $\bm x \models X_i$ refers to the assignment $\bm x$ whose $X_i$ is set to true.
+%means that $X_i$ is set to true in world $\bm x$. 
 %Intuitively, this is the self-information of obtaining an assignment that satisfies the constraint. 
+Intuitively, utilizing this loss pushes up the likelihood of assignments $\bm x$ that satisfies sentence $\alpha$.
 
 To utilize \cite{chen2014encoding}'s constraints into our neural net, we transform these constraints into boolean logic just like \cite{xu2017semantic}. For example, (Subj, Obj, Subj-Obj, rel1, rel2) = (1, 0, 0, Nationality, Birthplace) is a constraint in \cite{chen2014encoding}, limiting the argument type of relations, which means that two relation $ Nationality $ and $ Birthplace $ could have the same Subject , different Object and one relation's Subject is different with other's Object. Suppose there are 5 kinds of relations: rel1, rel2=$ Nationality $, rel3, rel4=$ Birthplace $, rel5, we encode this rule with a boolean vector (1, 0, 0, 0, 1, 0, 1, 0), the first three position indicates the (Subj, Obj, Subj-Obj) information, and the last five position indicates which two relations involved in the rule. And all the boolean form of constraints in \cite{chen2014encoding} composed of  $ \alpha $ in (1).
 
-\subsection{Incorporating  Type Constraints During Training}
-\label{sec:loss_term}
 \paragraph{Training Procedure}
 %How do you construct the batches?
 %What is the loss function?

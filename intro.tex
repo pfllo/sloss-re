@@ -23,7 +23,7 @@ However, since \ILP operates on the post-processing phase, their method typicall
 %clw's model operates on sentence level, which kind of deviates the multi-instance learning procedure, and therefore may introduce some performance drop.
 
 To overcome the problems of the \ILP method, we propose to incorporate these constraints by introducing an additional loss during training, and the test phase thus incurs no extra costs.
-Specifically, we format argument type and cardinality constraints into boolean expressions, and use the semantic loss framework~\cite{xu2017semantic} to convert the constraints into a loss term, which penalizes inconsistent predictions during training.
+Specifically, we format argument type and cardinality constraints into propositional logic sentences, and use the semantic loss framework~\cite{xu2017semantic} to convert the constraints into a loss term, which penalizes inconsistent predictions during training.
 In this way, the classification boundary is made more discriminative and therefore lead to better generalization ability of the model.
 Since we only add a loss term to the base model, our method is plug-and-play for most relation extraction models.
 % Further, the extra cost only reside in the training procedure, and the test is as efficient as before.
