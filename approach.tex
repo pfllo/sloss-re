@@ -1,8 +1,10 @@
 \section{Our Approach}
 %Briefly introduce the whole framework, and refer to each subsection one by one.
-In this section, we describe a novel loss term that incorporates the argument type and cardinality constraints required by each relation,
+In this section, we describe a novel loss term that incorporates the type constraints and the cardinality constraints required by each relation,
 which significantly increases the quality of relation extraction results with only moderate extra cost during training.
-Before delving into the details of our method (Sec.~\ref{sec:loss_term}), we will first briefly introduce our base relation extraction model (Sec.~\ref{sec:base_model}), and the constraints that we will use as well (Sec.~\ref{sec:constraints}).
+First, we briefly introduce our base relation extraction model (Sec.~\ref{sec:base_model}).
+Then we describe our constraints in detail (Sec.~\ref{sec:constraints}) and how to incorporate these constraints during training (Sec.~\ref{sec:loss_term}).
+%Before delving into the details of our method (Sec.~\ref{sec:loss_term}), we first briefly introduce our base relation extraction model (Sec.~\ref{sec:base_model}), and the constraints that we will use (Sec.~\ref{sec:constraints}).
 
 
 
@@ -29,7 +31,8 @@ Then, an attention layer is applied to these sentence embeddings to selectively 
 
 %Inspired by their work, we encode the constraints in \cite{chen2014encoding} to boolean logic, and add a semantic loss to the neural network.
 
-Following Chen et al.~\shortcite{chen2014encoding}, we derive type and cardinality constraints from an existing KB to implicitly capture the expected type and cardinality requirements for the arguments of a relation. 
+Following Chen et al.~\shortcite{chen2014encoding}, our relation constraints are defined over each combination of two entity pairs: ($subj_1$, $obj_1$), ($subj_2$, $obj_2$).
+We derive type constraints and cardinality constraints from an existing KB to implicitly capture the expected type and cardinality requirements for the arguments of a relation. 
 %\paragraph{Implicit Argument Types Inconsistencies:}
 \paragraph{Type Constraint}
 %Due to the lack of well-defined typing systems in most \KBs, determining the expected argument type of each relation with appropriate granularity is usually a hard problem.
@@ -144,8 +147,6 @@ We thereby define two semantic loss terms: $m^{co}L^{s}(\bm{C}^{co}, \bm{p})$ an
 Note that, for each loss term, all the relation assignment pairs that satisfiest the corresponding constraints are included.
 Therefore, minimizing these semantic loss terms actually increases the likelihood of all the relation predictions that satisfies the type constraints.
 
-\todo{state the commonality of the constraints in the front of the subsection. e.g., all defined on pairs of triples.}
-
 
 %To utilize \cite{chen2014encoding}'s constraints into our neural net, we transform these constraints into boolean logic just like \cite{xu2017semantic}. For example, (Subj, Obj, Subj-Obj, rel1, rel2) = (1, 0, 0, Nationality, Birthplace) is a constraint in \cite{chen2014encoding}, limiting the argument type of relations, which means that two relation $ Nationality $ and $ Birthplace $ could have the same Subject , different Object and one relation's Subject is different with other's Object. Suppose there are 5 kinds of relations: rel1, rel2=$ Nationality $, rel3, rel4=$ Birthplace $, rel5, we encode this rule with a boolean vector (1, 0, 0, 0, 1, 0, 1, 0), the first three position indicates the (Subj, Obj, Subj-Obj) information, and the last five position indicates which two relations involved in the rule. And all the boolean form of constraints in \cite{chen2014encoding} composed of  $ \alpha $ in (1).
 
@@ -177,9 +178,16 @@ where $0\leq i, j \leq batch\_size$, $\bm{p}_{ij} $ means the probability vector
 During training, we iterate by randomly selecting a mini-batch from the training set until converge, and adopt the Adam optimizer~\cite{kingma2014adam} to minimize the objective function.
 % To solve the optimization problem, we adopt Adam \cite{kingma2014adam} to minimize the objective function. For learning, we iterate by randomly selecting a mini-batch from the training set until converge.
 \paragraph{Simplified Semantic Loss}
+In Eq.~\ref{seq:semantic_loss}, for each entity pair combination, we need to calculate the semantic loss for every $\bm x \models \bm{C}$, which would be time-consuming since there are many relation assigments that are consistent with the constraint set $\bm{C}$.
+However, among these assignments, only the gold standard relation assignment is the one that we desire.
+Therefore, we simplifies Eq.~\ref{seq:semantic_loss} by only including the gold relation assignment and a few randomly sampled consistent assignments as supplements.
+We find that, with this simplification, we can significantly speeds up the training process at the cost of only minor drop in performance.
+
+
+%we find that for each entity pair combination, there exists $ \bm x $ that is more important than others
 
 %Describe the simplified version of the semantic loss.
-In our experiments, we find that the way \cite{xu2017semantic} calculating semantic loss is time-consuming, so we simplify the semantic loss calculation without losing much performance, which greatly reduces the time overhead.
+%In our experiments, we find that the way \cite{xu2017semantic} calculating semantic loss is time-consuming, so we simplify the semantic loss calculation without losing much performance, which greatly reduces the time overhead.
 
-In (1), we need calculate semantic loss for every $ \bm x (\bm x \models \alpha)$, but we find that for each entity pair combination, there exists $ \bm x $ that is more important than others. So we use the gold information of entity pairs to find the most important positive rule, and random sample some rules as a supplement. This significantly reduces the computational complexity.
+%In (1), we need calculate semantic loss for every $ \bm x (\bm x \models \alpha)$, but we find that for each entity pair combination, there exists $ \bm x $ that is more important than others. So we use the gold information of entity pairs to find the most important positive rule, and random sample some rules as a supplement. This significantly reduces the computational complexity.
 
