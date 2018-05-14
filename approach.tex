@@ -1,7 +1,7 @@
 \section{Our Approach}
 %Briefly introduce the whole framework, and refer to each subsection one by one.
 In this section, we describe a novel loss term that incorporates the type constraints and the cardinality constraints required by each relation,
-which significantly increases the quality of relation extraction results with only moderate extra cost during training.
+which significantly increases the quality of relation extraction results with only moderate extra training time.
 First, we briefly introduce our base relation extraction model (Sec.~\ref{sec:base_model}).
 Then we describe our constraints in detail (Sec.~\ref{sec:constraints}) and how to incorporate these constraints during training (Sec.~\ref{sec:loss_term}).
 %Before delving into the details of our method (Sec.~\ref{sec:loss_term}), we first briefly introduce our base relation extraction model (Sec.~\ref{sec:base_model}), and the constraints that we will use (Sec.~\ref{sec:constraints}).
@@ -13,11 +13,15 @@ Then we describe our constraints in detail (Sec.~\ref{sec:constraints}) and how 
 \subsection{Base Model}
 \label{sec:base_model}
 %Briefly introduce the base model (PCNN).
-Although our loss term is compatible to most existing relation extractors, in this paper, we take the attentive piecewise convolutional neural network (\APCNN)~\cite{lin2016neural} as our base model, which is currently one of the most widely used extractor in the relation extraction task.
+While our method is compatible to most existing relation extractors, in this paper, we take the attentive convolutional neural network~\cite{lin2016neural} as our base model, which is currently one of the most widely used extractor in \RE.
+It operates in the \MIL framework that takes in all the sentences mentioning the target subject and object, and output the relations between these two entities.
+It uses convolutional neural network for sentence embedding, and an attention layer to attentive selectively aggregate sentence embeddings into a sentence bag embedding, which is then fed to a softmax classifier to generate the predicted relation distribution, $\bm{p}$.
 
-Specifically, \APCNN operates in the \MIL framework that takes in all the sentences mentioning the target subject and object, and output the relations between these two entities.
-We first use the piecewise convolutional neural network (\PCNN)~\cite{zeng2015distant} to obtain the embedding of each sentence.
-Then, an attention layer is applied to these sentence embeddings to selectively aggregate them into a sentence bag embedding, which is then fed to a softmax classifier to generate the predicted relation distribution, $\bm{p}$.
+
+
+%Specifically, \APCNN operates in the \MIL framework that takes in all the sentences mentioning the target subject and object, and output the relations between these two entities.
+%We first use the piecewise convolutional neural network (\PCNN)~\cite{zeng2015distant} to obtain the embedding of each sentence.
+%Then, an attention layer is applied to these sentence embeddings to selectively aggregate them into a sentence bag embedding, which is then fed to a softmax classifier to generate the predicted relation distribution, $\bm{p}$.
 
 %First, we concatenate the word embeddings and position embeddings of each word in one sentence, the position embeddings indicates how close each word is to head or tail entities. Then, we use a convolutional layer with window size 3, a max pooling layer and a non-linear layer to merge all these features and get the representation of one sentence.Then a selective attention is done over a bag of sentences to get the bag representation.
 
@@ -31,17 +35,18 @@ Then, an attention layer is applied to these sentence embeddings to selectively 
 
 %Inspired by their work, we encode the constraints in \cite{chen2014encoding} to boolean logic, and add a semantic loss to the neural network.
 
-Following Chen et al.~\shortcite{chen2014encoding}, our relation constraints are defined over each combination of two entity pairs: ($subj_1$, $obj_1$), ($subj_2$, $obj_2$).
+Following Chen et al.~\shortcite{chen2014encoding}, our relation constraints are defined over each combination of two entity pairs: ($subj_1$, $r_1$ $obj_1$) and ($subj_2$,  $r_2$, $obj_2$),
+where $subj$ and $obj$ refers to subject and object respectively, and $r$ represents a predicted relation for the corresponding entity pair.
 We derive type constraints and cardinality constraints from an existing KB to implicitly capture the expected type and cardinality requirements for the arguments of a relation. 
 %\paragraph{Implicit Argument Types Inconsistencies:}
 \paragraph{Type Constraint}
 %Due to the lack of well-defined typing systems in most \KBs, determining the expected argument type of each relation with appropriate granularity is usually a hard problem.
 %Generally, the argument types of the correct predictions should be consistent with each other.
-Similar to Chen et al.~\shortcite{chen2014encoding}, we also use entity sharing between relations to implicitly capture the expected argument type of each relation.
-Specifically, if the subject set of relation $R_1$ in \KB has a large intersection with those in $R_2$, then we consider $R_1$ and $R_2$ have the same expected subject type. 
-We thereby collect relation paris that have the same subject type ($\bm{C}^{ts}$), object type ($\bm{C}^{to}$), and relation pairs whose subject type of $R_1$ is the same as the object type of $R_2$ ($\bm{C}^{tso}$).
+%Similar to Chen et al.~\shortcite{chen2014encoding}, we also use entity sharing between relations to implicitly capture the expected argument type of each relation.
+If the subject (or object) set of relation $r_1$ in \KB has a large intersection with those in $r_2$, then we consider $R_1$ and $R_2$ to have the same expected subject (or object) type. 
+We thereby collect relation paris that have the same subject type ($\bm{C}^{ts}$), object type ($\bm{C}^{to}$), and similarly, relation pairs whose subject type of $r_1$ is the same as the object type of $r_2$ ($\bm{C}^{tso}$).
 %finding relation pairs that can share the same subject ($C^s$), object ($C^o$), and those where the subject of one relation can be the object of the other ($C^{so}$).
-Then, $\bm{C}^{ts}$, $\bm{C}^{to}$ and $\bm{C}^{tso}$ represents the constraints that we expect ($r_1$, $r_2$) of the predicted ($subj_1$, $r_1$, $obj_1$),  ($subj_2$, $r_2$, $obj_2$) pairs fall into $\bm{C}^{ts}$ when $subj_1=subj_2$, $\bm{C}^{to}$ when $obj_1=obj_2$ and $\bm{C}^{tso}$ when when $subj_1=obj_2$ respectively.
+Then, $\bm{C}^{ts}$, $\bm{C}^{to}$ and $\bm{C}^{tso}$ represents the constraints that we expect ($r_1$, $r_2$) of each combination of ($subj_1$, $r_1$, $obj_1$) and ($subj_2$, $r_2$, $obj_2$) to fall into $\bm{C}^{ts}$ when $subj_1=subj_2$, $\bm{C}^{to}$ when $obj_1=obj_2$ and $\bm{C}^{tso}$ when when $subj_1=obj_2$, respectively.
 %Then, we expect the relations of all pairs of predicted \emph{(subject, relation, object)} triples to fall into $\bm{C}^{ts}$, $\bm{C}^{to}$ or $\bm{C}^{tso}$ when they share the same entity in either subject or object.
 The idea is that, if the predicted relations of two triples require the same entity to belong to different types, then at least one of the prediction must be wrong.
 %The idea is that, take $C^s$ for example, if the subject set of relation $R_1$ has a large intersection with those in $R_2$ (($R_1$, $R_2$) lies in $C^s$ ), then the expected subject type of $R_1$ and $R_2$ are likely to be the same. Therefore, if a pair of predicted relation $R_1'$ and $R_2'$ for two entity pairs share the same subject, which implies $R_1'$ and $R_2'$ have the same expected subject type, then ($R_1'$, $R_2'$) must lie in $C^s$. 
@@ -54,8 +59,8 @@ The idea is that, if the predicted relations of two triples require the same ent
 \paragraph{Cardinality Constraint}
 Given a subject (or object), some relations should only have one object (or subject).
 For example, the relation \emph{Capital} would expect only one object for a given subject.
-Following this observation, we collect relations that can have multiple objects ($\bm{C}^{co}$) or subjects ($\bm{C}^{cs}$),
-and $\bm{C}^{co}$ (or $\bm{C}^{cs}$) represents the constraint that we expect the relation of the predicted ($subj_1$, $r$, $obj_1$),  ($subj_2$, $r$, $obj_2$) pairs fall into $\bm{C}^{co}$ (or $\bm{C}^{cs}$) when $subj_1=subj_2 \land obj_1\neq obj_2$ (or $subj_1\neq subj_2 \land obj_1=obj_2$)
+Following this observation, we collect relations that can have multiple objects ($\bm{C}^{co}$) or subjects ($\bm{C}^{cs}$).
+Then, $\bm{C}^{co}$ (or $\bm{C}^{cs}$) represents the constraints that we expect the relation $r$ of each combination of ($subj_1$, $r$, $obj_1$) and ($subj_2$, $r$, $obj_2$), which have the same relation $r$, to fall into $\bm{C}^{co}$ (or $\bm{C}^{cs}$) when $subj_1=subj_2 \land obj_1\neq obj_2$ (or when $subj_1\neq subj_2 \land obj_1=obj_2$)
 %expect the predicted relations that have multiple objects (or subjects) for a given subject (or object) to fall into $\bm{C}^{co}$ (or $\bm{C}^{cs}$).
 
 % For example, given USA as the subject of the relation Capital, we can only accept one possible object, because there is great chance that a country only have one capital.
@@ -110,7 +115,7 @@ Obj-Uni:$o_1 \neq o_2 \quad when \quad r_1 = r_2 \wedge s_1 = s_2$
 \subsection{Incorporating  Constraints for Training}
 \label{sec:loss_term}
 In this section, we demonstrate our method of converting the relation constraints into a loss term using the semantic loss framework~\cite{xu2017semantic}.
-We also make suitable modifications to speed up the training process with only minor drop in prediction ability.
+We also introduce a principled variant of our method to speed up the training process with only minor drop in the prediction ability.
 
 \paragraph{Relation Constraint Loss}
 %Describe semantic loss, and how to encode clw's constraints into semantic loss.
@@ -126,12 +131,13 @@ Concretely, the semantic loss $L^{s}(\bm{C}, \bm{p})$ is defined as:
 	L^{s}(\bm{C}, \bm{p}) = -log\sum\limits_{\bm x\models\bm{C}}\prod\limits_{i:\bm x\models X_i}p_i\prod\limits_{i:\bm x\models \neg X_i}(1-p_i)
 \end{equation}
 %over variables $\bm X=\{X_1,...,X_n\}$, and a vector of probabilities $p$, where $p_i$ denotes the predicted probability of variable $X_i$: 
-where $\bm{C}$ is the set of propositional logic constraints defined over variables $\bm{X}$,
+where $\bm{C}$ is the set of our constraints that are defined over variables $\bm{X}$,
 $p_i$ is the predicted probability of $X_i$,
-$\bm x \models \bm{C}$ refers to the assignment $\bm x$ of variables $\bm X$ that satisfies constraints in $\bm{C}$,
-and $i:\bm x \models X_i$ (or $i:\bm x\models \neg X_i$) refers to all the indices $i$ where $X_i$ is set to true (or false) in assignment $\bm x$.
+$\bm x \models \bm{C}$ refers to the assignment $\bm x$ of variables $\bm X$ that satisfies the constraints in $\bm{C}$,
+and $i:\bm x \models X_i$ (or $i:\bm x\models \neg X_i$) refers to the indices $i$ where $X_i$ is set to true (or false) in assignment $\bm x$.
 
-As for our type constraints, the variables $\bm{X}\in \{0,1\}^{2R}$, where $R$ is the number of relations, are defined over a pair of  relations ($r_1$, $r_2$) which are assigned to 2 entity pairs ($subj_1$, $obj_1$) and ($subj_2$, $obj_2$) respectively.
+As for our type constraints, the variables $\bm{X}\in \{0,1\}^{2R}$, where $R$ is the number of relations,
+are defined over a pair of  relations ($r_1$, $r_2$) that are assigned to 2 entity pairs ($subj_1$, $obj_1$) and ($subj_2$, $obj_2$) respectively.
 Specifically, $X_i\in \bm{X}_{1...R}$ equals 1 only when $r_1$ is the $i^{th}$ relation,
 and $X_{R+i}\in \bm{X}_{R+1...2R}$ equals 1 only when $r_2$ is the $i^{th}$ relation.
 We thereby define three semantic loss terms: $m^{ts}L^{s}(\bm{C}^{ts}, \bm{p})$, $m^{to}L^{s}(\bm{C}^{to}, \bm{p})$, $m^{tso}L^{s}(\bm{C}^{tso}, \bm{p})$, where $m^{ts}$, $m^{to}$, $m^{tso}$ are 0-1 masks that are set to 1 when $subj_1=subj_2$, $obj_1=obj_2$, $subj_1=obj_2$ respectively.
@@ -140,12 +146,12 @@ We thereby define three semantic loss terms: $m^{ts}L^{s}(\bm{C}^{ts}, \bm{p})$,
 %Intuitively, this is the self-information of obtaining an assignment that satisfies the constraint. 
 %Intuitively, utilizing this loss pushes up the likelihood of assignments $\bm x$ that satisfies sentence $\alpha$.
 
-As for our cardinality constraints, the variables $\bm{X}\in \{0,1\}^{R}$ are defined over a pair of a relations $r$ that is assigned to 2 entity pairs ($subj_1$, $obj_1$) and ($subj_2$, $obj_2$) simultaneously.
+As for our cardinality constraints, the variables $\bm{X}\in \{0,1\}^{R}$ are defined over a relation $r$ that is assigned to ($subj_1$, $obj_1$) and ($subj_2$, $obj_2$) simultaneously.
 Specifically, $X_i\in \bm{X}$ equals 1 only when $r$ is the $i^{th}$ relation,
 We thereby define two semantic loss terms: $m^{co}L^{s}(\bm{C}^{co}, \bm{p})$ and $m^{cs}L^{s}(\bm{C}^{cs}, \bm{p})$, where $m^{co}$ and $m^{cs}$are 0-1 masks that are set to 1 when $subj_1=subj_2 \land obj_1\neq obj_2$ and $subj_1\neq subj_2 \land obj_1=obj_2$ respectively.
 
-Note that, for each loss term, all the relation assignment pairs that satisfiest the corresponding constraints are included.
-Therefore, minimizing these semantic loss terms actually increases the likelihood of all the relation predictions that satisfies the type constraints.
+Note that, for each loss term, all the relation assignment pairs that satisfies the corresponding constraints are included.
+Therefore, minimizing these semantic loss terms actually increases the likelihood of all the relation predictions that satisfies our relation constraints.
 
 
 %To utilize \cite{chen2014encoding}'s constraints into our neural net, we transform these constraints into boolean logic just like \cite{xu2017semantic}. For example, (Subj, Obj, Subj-Obj, rel1, rel2) = (1, 0, 0, Nationality, Birthplace) is a constraint in \cite{chen2014encoding}, limiting the argument type of relations, which means that two relation $ Nationality $ and $ Birthplace $ could have the same Subject , different Object and one relation's Subject is different with other's Object. Suppose there are 5 kinds of relations: rel1, rel2=$ Nationality $, rel3, rel4=$ Birthplace $, rel5, we encode this rule with a boolean vector (1, 0, 0, 0, 1, 0, 1, 0), the first three position indicates the (Subj, Obj, Subj-Obj) information, and the last five position indicates which two relations involved in the rule. And all the boolean form of constraints in \cite{chen2014encoding} composed of  $ \alpha $ in (1).
@@ -153,7 +159,7 @@ Therefore, minimizing these semantic loss terms actually increases the likelihoo
 \paragraph{Training Procedure}
 %How do you construct the batches?
 %What is the loss function?
-Here we introduce the learning and optimization details of our model. Our objective function is consists of two parts:
+Here we introduce the learning and optimization details of our model. Our objective function consists of two parts:
 \begin{equation}
 	J(\theta) = J_{en}(\theta) + J_{SL}(\theta)
 \end{equation}
@@ -165,15 +171,15 @@ where  $J_{en}(\theta)$ is the original cross-entropy classification loss, and $
 %\end{equation}
 %where $ s $ indicates the number of sentence bags and $ \theta $ indicates all parameters of our model.
 
-For any combination of two entity pair in a batch, we use their \APCNN output to get the probability vector $\bm{p}$ in Eq.~\ref{seq:semantic_loss},
+For any combination of two entity pair in a batch, we use the outputs of our base model to get the probability vector $\bm{p}$ in Eq.~\ref{seq:semantic_loss},
 and thereby compute the semantic loss terms $m^{*}L^{s}(\bm{C}^{*}, \bm{p})$.
-Here $m^{*}L^{s}(\bm{C}^{*}, \bm{p})$ denotes all the semantic loss terms defined in Sec.~\ref{sec:loss_term}.
+Here $m^{*}L^{s}(\bm{C}^{*}, \bm{p})$ denotes the sum of all the semantic loss terms defined in Sec.~\ref{sec:loss_term}.
 %Then we use Eq.~\ref{seq:semantic_loss} to calculate $L^{s}(\alpha, p)$ on all combinations of two entity pair.
 Finally the semantic loss is defined as follows:
 \begin{equation}
 	J_{SL}(\theta) = \sum\limits_{i \neq j}{m^{*}L^{s}(\bm{C}^{*}, \bm{p}_{ij})}
 \end{equation}
-where $0\leq i, j \leq batch\_size$, $\bm{p}_{ij} $ means the probability vector generated from the \APCNN output of entity pair $i$ and $j$.
+where $0\leq i, j \leq batch\_size$, and $\bm{p}_{ij} $ refers to the probability vector generated from the base relation extractor output of entity pair $i$ and $j$.
 
 During training, we iterate by randomly selecting a mini-batch from the training set until converge, and adopt the Adam optimizer~\cite{kingma2014adam} to minimize the objective function.
 % To solve the optimization problem, we adopt Adam \cite{kingma2014adam} to minimize the objective function. For learning, we iterate by randomly selecting a mini-batch from the training set until converge.
