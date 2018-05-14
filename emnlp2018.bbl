@@ -1,0 +1,63 @@
+\begin{thebibliography}{9}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[{Bizer et~al.(2009)Bizer, Lehmann, Kobilarov, Auer, Becker, Cyganiak,
+  and Hellmann}]{bizer2009dbpedia}
+Christian Bizer, Jens Lehmann, Georgi Kobilarov, S{\"o}ren Auer, Christian
+  Becker, Richard Cyganiak, and Sebastian Hellmann. 2009.
+\newblock Dbpedia-a crystallization point for the web of data.
+\newblock \emph{Web Semantics: science, services and agents on the world wide
+  web}, 7(3):154--165.
+
+\bibitem[{Chen et~al.(2014)Chen, Feng, Huang, Qin, and Zhao}]{chen2014encoding}
+Liwei Chen, Yansong Feng, Songfang Huang, Yong Qin, and Dongyan Zhao. 2014.
+\newblock Encoding relation requirements for relation extraction via joint
+  inference.
+\newblock In \emph{Proceedings of the 52nd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, volume~1, pages
+  818--827.
+
+\bibitem[{Kingma and Ba(2014)}]{kingma2014adam}
+Diederik~P Kingma and Jimmy Ba. 2014.
+\newblock Adam: A method for stochastic optimization.
+\newblock \emph{arXiv preprint arXiv:1412.6980}.
+
+\bibitem[{Lin et~al.(2016)Lin, Shen, Liu, Luan, and Sun}]{lin2016neural}
+Yankai Lin, Shiqi Shen, Zhiyuan Liu, Huanbo Luan, and Maosong Sun. 2016.
+\newblock Neural relation extraction with selective attention over instances.
+\newblock In \emph{ACL}, volume~1, pages 2124--2133.
+
+\bibitem[{Riedel et~al.(2010)Riedel, Yao, and McCallum}]{riedel2010modeling}
+Sebastian Riedel, Limin Yao, and Andrew McCallum. 2010.
+\newblock Modeling relations and their mentions without labeled text.
+\newblock In \emph{Joint European Conference on Machine Learning and Knowledge
+  Discovery in Databases}, pages 148--163. Springer.
+
+\bibitem[{Suchanek et~al.(2013)Suchanek, Fan, Hoffmann, Riedel, and
+  Talukdar}]{suchanek2013advances}
+Fabian Suchanek, James Fan, Raphael Hoffmann, Sebastian Riedel, and
+  Partha~Pratim Talukdar. 2013.
+\newblock Advances in automated knowledge base construction.
+\newblock \emph{SIGMOD Records journal, March}.
+
+\bibitem[{Xu et~al.(2017)Xu, Zhang, Friedman, Liang, and
+  Broeck}]{xu2017semantic}
+Jingyi Xu, Zilu Zhang, Tal Friedman, Yitao Liang, and Guy Van~den Broeck. 2017.
+\newblock A semantic loss function for deep learning with symbolic knowledge.
+\newblock \emph{arXiv preprint arXiv:1711.11157}.
+
+\bibitem[{Ye et~al.(2017)Ye, Chao, Luo, and Li}]{ye2017jointly}
+Hai Ye, Wenhan Chao, Zhunchen Luo, and Zhoujun Li. 2017.
+\newblock Jointly extracting relations with class ties via effective deep
+  ranking.
+\newblock In \emph{Proceedings of the 55th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 1810--1820.
+  Association for Computational Linguistics.
+
+\bibitem[{Zeng et~al.(2015)Zeng, Liu, Chen, and Zhao}]{zeng2015distant}
+Daojian Zeng, Kang Liu, Yubo Chen, and Jun Zhao. 2015.
+\newblock Distant supervision for relation extraction via piecewise
+  convolutional neural networks.
+\newblock In \emph{EMNLP}, pages 1753--1762.
+
+\end{thebibliography}
