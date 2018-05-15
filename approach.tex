@@ -184,6 +184,7 @@ where $0\leq i, j \leq batch\_size$, and $\bm{p}_{ij} $ refers to the probabilit
 During training, we iterate by randomly selecting a mini-batch from the training set until converge, and adopt the Adam optimizer~\cite{kingma2014adam} to minimize the objective function.
 % To solve the optimization problem, we adopt Adam \cite{kingma2014adam} to minimize the objective function. For learning, we iterate by randomly selecting a mini-batch from the training set until converge.
 \paragraph{Simplified Semantic Loss}
+\label{Sec:simple_SL}
 In Eq.~\ref{seq:semantic_loss}, for each entity pair combination, we need to calculate the semantic loss for every $\bm x \models \bm{C}$, which would be time-consuming since there are many relation assigments that are consistent with the constraint set $\bm{C}$.
 However, among these assignments, only the gold standard relation assignment is the one that we desire.
 Therefore, we simplifies Eq.~\ref{seq:semantic_loss} by only including the gold relation assignment and a few randomly sampled consistent assignments as supplements.
