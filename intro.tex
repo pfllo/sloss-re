@@ -4,13 +4,13 @@ Relation extraction (\RE) aims at identifying relations between pairs of entitie
 
 In the literature, \RE is usually investigated in the distant supervision (\DS) paradigm, where datasets are automatically constructed by aligning existing \KB \emph{(subject, relation, object)} triples with a large corpus, and considers sentences containing the subject and object entity in a triple as evidence for the corresponding relation~\cite{riedel2010modeling}.
 To alleviate the sentence level noise in the automatically constructed dataset, \RE is often considered in the multi-instance learning (\MIL) framework where all the sentences containing the target subject and object are packed into a \textbf{\emph{sentence bag}}, and relation extractors take in these sentences to predict the relations for the entity pair. 
-Following this framework, Zeng et al.~\shortcite{zeng2015distant} uses piecewise convolutional neural network (\PCNN) to handle the extraction task, Lin et al.~\shortcite{lin2016neural} introduces attention mechanism for better noise tolerence,
+Following this framework, Zeng et al.~\shortcite{zeng2015distant} uses piecewise convolutional neural network (\PCNN) to handle the extraction task, Lin et al.~\shortcite{lin2016neural} introduces attention mechanism for better noise tolerance,
 %methods like graphic model~\cite{surdeanu2012multi}, neural network~\cite{lin2016neural} have been successfully used,
-Ye et al.~\shortcite{ye2017jointly} makes further improvements by learning co-occurence tendency between relations via learning to rank.
+Ye et al.~\shortcite{ye2017jointly} makes further improvements by learning co-occurrence tendency between relations via learning to rank.
 %In the literature, \RE is usually investigated in a classification style, where the classifier takes in sentences containing the mentions of the target entity pair, and output the predicted relations between them~\cite{hoffmann2011knowledge,surdeanu2012multi,zeng2015distant,lin2016neural}.
 
 Typically, most existing relation extractors relies only on input sentences to make predictions, and ignores the constraints required by each relation.
-Take the relation \emph{Capital} for example, it expects its subject to be a country and its object to be a city.
+Take the relation \emph{Capital} for example, it expects its subject to be a \underline{country} and its object to be a \underline{city}.
 And in most cases, it also expects a city to be the capital of only one country.
 This kind of constraints can help us identify inconsistent predictions and thereby improve the extraction results.
 
@@ -19,7 +19,7 @@ Chen et al~\shortcite{chen2014encoding} evades this difficulty by implicitly min
 Specifically, while collecting cardinality requirements directly from data, they evades the tricky argument type constraints by collecting relations pairs that have the same subject or object type instead, which do not require a concrete specification for argument type.
 Then, they use  integer linear programming (\ILP) to resolve the predictions that are inconsistent regarding the constraints.
 However, since \ILP operates at the post-processing phase, their method typically requires more time during prediction.
-Besides, since \ILP does not change the prediction scores of the base model, it tends to leave the predictions corrected by the constraints with low scores, which hurts the performance in terms of the precision-recall curve criterior.
+Besides, since \ILP does not change the prediction scores of the base model, it tends to leave the predictions corrected by the constraints with low scores, which hurts the performance in terms of the precision-recall curve criterion.
 %and introduces high delay to the use of the extraction results since we need to wait for all the extractions to complete before the ILP step.
 %which is inappropirate for downstream applications like \QA that need to use the \RE result immediately when 
 %clw's model operates on sentence level, which kind of deviates the multi-instance learning procedure, and therefore may introduce some performance drop.
@@ -27,7 +27,7 @@ Besides, since \ILP does not change the prediction scores of the base model, it 
 To overcome the problems of \ILP, we propose to incorporate these constraints by introducing an additional loss term to penalize inconsistent predictions during training.
 %which improves the prediction ability of the base model, and the prediction phase incurs no extra costs.
 Specifically, we consider the type and cardinality constraints as propositional logic constraints, and use the semantic loss framework~\cite{xu2017semantic} to convert them into a loss term.
-Compared to other methods of enforcing logical constraints like the teacher-student network~\cite{hu2016harnessing} that relies on fuzzy relaxation of the constraints, semantic loss possesses the precise meaning of the constraints and is fully differenctialble since it directly use the predicted probability to construct the loss.
+Compared to other methods of enforcing logical constraints like the teacher-student network~\cite{hu2016harnessing} that relies on fuzzy relaxation of the constraints, semantic loss possesses the precise meaning of the constraints and is fully differentiable since it directly use the predicted probability to construct the loss.
 In this way, the base model is encouraged to find more textual clues when detecting conflicts, which leads to better prediction ability of the model, and the prediction phase incurs no extra costs.
 %the classification boundary is made more discriminative and therefore lead to better generalization ability of the model.
 Further, since we only add a loss term to the base model, our method is plug-and-play for most relation extraction models.
