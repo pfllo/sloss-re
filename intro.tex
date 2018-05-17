@@ -18,7 +18,8 @@ However, properly utilizing these clues is non-trivial, since many \KBs do not h
 Chen et al~\shortcite{chen2014encoding} evades this difficulty by implicitly mining such requirements from data.
 Specifically, while collecting cardinality requirements directly from data, they evades the tricky argument type constraints by collecting relations pairs that have the same subject or object type instead, which do not require a concrete specification for argument type.
 Then, they use  integer linear programming (\ILP) to resolve the predictions that are inconsistent regarding the constraints.
-However, since \ILP operates at the post-processing phase, their method typically requires more time during prediction.
+However, since \ILP operates at the post-processing phase and needs an adequate number of predictions to correct the results, their method typically requires more time during prediction, 
+and could not be applied to online applications.
 Besides, since \ILP does not change the prediction scores of the base model, it tends to leave the predictions corrected by the constraints with low scores, which hurts the performance in terms of the precision-recall curve criterion.
 %and introduces high delay to the use of the extraction results since we need to wait for all the extractions to complete before the ILP step.
 %which is inappropirate for downstream applications like \QA that need to use the \RE result immediately when 
