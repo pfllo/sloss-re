@@ -35,13 +35,13 @@ We compare our semantic loss method (\SL) along with its simplified version (\SL
 	\begin{minipage}[t]{0.45\textwidth}
 		\centering
 		\includegraphics[width=7cm]{./result-figure/DBpedia-CNN-result.png}
-		\caption{The English Dataset}
+		\caption{Performance on English Dataset}
 		\label{fig:dbpedia}
 	\end{minipage}
 	\begin{minipage}[t]{0.45\textwidth}
 		\centering
 		\includegraphics[width=7cm]{./result-figure/Chinese-CNN-result.png}
-		\caption{The Chinese Dataset}
+		\caption{Performance on Chinese Dataset}
 		\label{fig:chinese}
 	\end{minipage}
 \end{figure}
@@ -61,34 +61,6 @@ Note that \emph{Location} requires its subject to be a \underline{place}, and \e
 However, with the help of relation constraints during training, our semantic loss term identifies the conflict and thus encourages the base extractor to focus more on the textual clues about relation \emph{CoachedTeam}.
 %and our SL Model eliminates the conflict through automatically learning constrain knowledge when training. 
 %28 8 28 45 
-\iffalse
-\begin{table}
-	\centering  
-	\scriptsize  
-	\caption{violate count}  
-	\begin{tabular}{|c|c|c|c|c|}  
-		\hline  
-		 &Model&Type Violates&Cardinality Violates&Total\\  
-		\hline 
-		\multirow{2}*{DBpedia} & CNN & - & - & -\\
-		~ & CNN-SL & - & - & -\\
-		\hline 
-		\multirow{2}*{Chinese} & CNN & - & - & -\\
-		~ & CNN-SL & - & - & -\\ 
-		\hline   
-	\end{tabular} 
-	
-	\label{table:violate-count}  
-\end{table}
-\fi
-\iffalse
-\begin{figure}
-	\centering
-	\includegraphics[width=.4\textwidth]{./result-figure/CNN0-1.png}
-	\caption{The DBpedia Dataset}
-\end{figure}
-\fi
-
 
 \paragraph{Compare with ILP Method}
 %Compare the semantic loss method and ILP.
@@ -98,10 +70,11 @@ As shown in Fig.~\ref{fig:dbpedia}, in the English dataset, \SL performs general
 We think the superior performance comes from the fact that \SL functions during training and \ILP only acts as a post-processor.
 Therefore, \SL can encourage the base model to find more textual clues when detecting conflicts, while \ILP can only find the most probable relation assignment that satisfies the constraints based on the output scores of the base model, which will possibly drop some high-score predictions and thus still leave the correct relation with a low score.
 
+%For the Chinese dataset, as shown in Fig. ~\ref{fig:chinese}, we can see that \SL performs better in the high precision region.
 As for the Chinese dataset, based on the same reason, as shown in Fig.~\ref{fig:chinese}, we can see that \SL performs better in the high precision region.
 %which is also caused by the fact that \ILP tend to leave the predictions corrected by the constraints with low scores.
 However, we find that the constraints in Chinese are more effective than that in the English dataset, which leads to more corrections of the \ILP method.
-Therefore, since \ILP tend to leave the predictions corrected by the constraints with low scores, a large fraction of the correct predictions gather around the low score region, which leads to higher precision of the \ILP curve in the high recall region.
+Therefore, since \ILP tend to leave the predictions corrected by the constraints with low scores, a large fraction of the correct predictions gather around the lower score region, which leads to higher precision of the \ILP curve in the high recall region.
 
 
 %For DBpedia dataset, our method's performance is over \ILP method almost on all precision point. We think this is mainly because \ILP is a post-processing method which choose the most possible prediction that satisfy the constraints from the top three candidate results for every entity pairs, and this would drop some high score predictions, so for the high precision point, our SL method have better performance for both DBpedia dataset and Chinese Dataset. We also find that when recall in (0.3, 0.5), the \ILP is better than our SL method for Chinese Dataset, we think this is because adding constraints for Chinese dataset is much better than DBpedia dataset, the \ILP would drop more high score predictions and the right prediction corrected by \ILP is more likely appear at recall range (0.3, 0.5).
@@ -109,7 +82,7 @@ Therefore, since \ILP tend to leave the predictions corrected by the constraints
 
 %and Fig.~\ref{fig:chinese}, when using the same constraints and base model, our \SL method is competitive to \ILP, and sometimes even performs better.
 
-Note that, in practice, since we often require high-confidence extraction results, the performance of the high-precision region of the PR curve is more important than the low-precision one.
+In practice, we usually require high-confidence extraction results, the performance of the high-precision region of the PR curve is more important than the low-precision one.
 Further, recall that different from \ILP, \SL does not introduce extra cost during prediction.
 These experiments indicate that our \SL method is more effective than \ILP in practice.
 % the performance of high precision in PR curve is more important that the low precision, so totally our SL model gets superior performance than \ILP.
