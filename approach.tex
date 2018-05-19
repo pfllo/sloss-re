@@ -40,7 +40,7 @@ it uses convolutional neural network for sentence embedding, and an attention la
 Our relation constraints are similar to those used by  Chen et al.~\shortcite{chen2014encoding}.
 Specially,
 %Following Chen et al.~\shortcite{chen2014encoding}, 
-our relation constraints are defined over each combination of two entity pairs: $(subj_1, r_1 obj_1)$ and $(subj_2,  r_2, obj_2)$
+our relation constraints are defined over each combination of two entity pairs:$(subj_1, r_1, obj_1)$ and $(subj_2,  r_2, obj_2)$
 (we use $subj$, $obj$ and $r$ to denote subject, object and relation for entity pair, respectively, in the rest of the paper).
 We derive type constraints and cardinality constraints from existing KB to implicitly capture the expected type and cardinality requirements for the arguments of a relation.
 %details see Chen et al.~\shortcite{chen2014encoding}. 
@@ -170,19 +170,31 @@ where  $J_{en}(\theta)$ is the original cross-entropy classification loss, and $
 %and thereby compute the semantic loss terms $m^{*}L^{s}(\bm{C}^{*}, \bm{p})$.
 %Here $m^{*}L^{s}(\bm{C}^{*}, \bm{p})$ denotes the sum of all the semantic loss terms defined in Sec.~\ref{sec:loss_term}.
 
-For any combination of two entity pairs in a batch, we use $p^{t}_{i}$ and $p^{c}_{i}$ in Eq.~(\ref{Eq:compute_p}) to denote the $i^{th}$ value of probability vector $\bm{p}$ for type and cardinality constraints in Eq.~(\ref{seq:semantic_loss}), respectively.
+For any combination of two entity pairs in a batch, we use $\bm{p}_{ij}^{t}$ and $\bm{p}_{ij}^{c}$ in Eq.~(\ref{Eq:compute_p}) to denote the probability vector $\bm{p}$ for type and cardinality constraints in Eq.~(\ref{seq:semantic_loss}), respectively.
 \begin{equation}
 \label{Eq:compute_p}
 %\bm{p}_{i} = \bm{p'}_{1i} + \bm{p'}_{2i} - \bm{p'}_{1i}*\bm{p'}_{2i};\;\; \bm{p}_{i} = \bm{p'}_{1i}*\bm{p'}_{2i}
-p_{i}^{t} = 1-(1-p'_{1i})(1-p'_{2i});\;\; p_{i}^{c} = p'_{1i}p'_{2i}
+\bm{p}_{ij}^{t} = 1-(1-\bm{p'}_{i})(1-\bm{p'}_{j});\;\; \bm{p}_{ij}^{c} = \bm{p'}_{i}\bm{p'}_{j}
 \end{equation}
-where $\bm{p'}_1$ and $\bm{p'}_2$ represents the relation distribution outputs of our base model for the two entity pairs,
-$p_{i}^{t}$ and $p_{i}^{c}$ denotes the predicted probability of variable $X_i$ in the type and cardinality constraints, respectively.
+where $\bm{p'}_i$ and $\bm{p'}_j$ represents the relation distribution outputs of our base model for the two entity pairs,
+$\bm{p}_{ij}^{t}(t \in \{ts, to, tso\})$ and $\bm{p}_{ij}^{c}(c \in \{cs, co\})$ denotes the predicted probability of variables $\bm{X}$ in the type and cardinality constraints, respectively.
 
-And then we compute the semantic loss terms $\lambda ^{k}m^{k}L^{s}(\bm{C}^{k}, \bm{p}), (k \in \bm{\Phi})$ for each sub-category constraints over two entity pairs.
+And then we compute the semantic loss terms $\lambda ^{k}m^{k}L^{s}(\bm{C}^{k}, \bm{p}_{ij}^{k}), (k \in \bm{\Phi})$ for each sub-category constraints over two entity pairs.
 %($subj_1$, $obj_1$), ($subj_2$, $obj_2$).
 Here $\lambda^{k}$ denotes the corresponding weight coefficient and $m^{k}$ is a 0-1 mask which is set to 1 when the two entity pairs satisfies the conditions of $\bm{C}^{k}$.
 %Then we use Eq.~\ref{seq:semantic_loss} to calculate $L^{s}(\alpha, p)$ on all combinations of two entity pair.
+
+We demonstrate the calculating process of $L^{s}(\bm{C}^{to}, \bm{p}_{ij}^{to})$ in Fig.~\ref{fig:example}, where two entity pairs are (Bard College, New York) and (AT\&T, New York), satisfy the conditions having the same object type of $\bm{C}^{to}$.
+
+\begin{figure}[h]
+	\centering
+	\begin{minipage}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[width=8cm]{./result-figure/example.pdf}
+		\caption{Calculate example}
+		\label{fig:example}
+	\end{minipage}
+\end{figure}
 
 Finally our semantic loss is defined as follows:
 \begin{equation}
