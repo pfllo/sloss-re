@@ -13,7 +13,7 @@ The Chinese dataset uses a \KB constructed by using the Infoboxes of HudongBaiKe
 and aligns its triples to a corpus collected from four chinese economic newspapers.
 It contains 28 relations, about 60k entity tuples, 120k sentences for training and 40k tuples, 83k sentences for testing.
 
-We do not use Riedel's dataset~\cite{riedel2010modeling}, which is commonly used in \RE, because  Chen et al.~\shortcite{chen2014encoding} have already proven that relation constraints does not work on that dataset.
+We do not use Riedel's dataset~\cite{riedel2010modeling}, which is commonly used in \RE, because  Chen et al.~\shortcite{chen2014encoding} have already mentioned that relation constraints does not work on that dataset.
 
 
 \paragraph{Hyperparameters}
@@ -66,15 +66,17 @@ However, with the help of relation constraints during training, our semantic los
 %Compare the semantic loss method and ILP.
 %NOTE: clw also use cardinality constraints
 %We use the same constraints information as the \ILP method of \cite{chen2014encoding}, and Figure ~\ref{fig:dbpedia} and Figure ~\ref{fig:chinese} shows that our SL method delivers superior performance compared to \ILP method in both DBpedia dataset and Chinese dataset.
-As shown in Fig.~\ref{fig:dbpedia}, in the English dataset, \SL performs generally better than \ILP.
-We think the superior performance comes from the fact that \SL functions during training and \ILP only acts as a post-processor.
+As shown in Fig.~\ref{fig:dbpedia}, in the English dataset,
+\SL gets a comparable performance with \ILP in the high precision region, and performs better than \ILP in the lower precision.
+We think the performance improvement comes from the fact that \SL functions during training and \ILP only acts as a post-processor.
 Therefore, \SL can encourage the base model to find more textual clues when detecting conflicts, while \ILP can only find the most probable relation assignment that satisfies the constraints based on the output scores of the base model, which will possibly drop some high-score predictions and thus still leave the correct relation with a low score.
 
 %For the Chinese dataset, as shown in Fig. ~\ref{fig:chinese}, we can see that \SL performs better in the high precision region.
-As for the Chinese dataset, based on the same reason, as shown in Fig.~\ref{fig:chinese}, we can see that \SL performs better in the high precision region.
+As for the Chinese dataset, as shown in Fig.~\ref{fig:chinese}, we can see that \SL obtains superior performance in the high precision region, but \ILP performs better in the lower precision region.
 %which is also caused by the fact that \ILP tend to leave the predictions corrected by the constraints with low scores.
-However, we find that the constraints in Chinese are more effective than that in the English dataset, which leads to more corrections of the \ILP method.
-Therefore, since \ILP tend to leave the predictions corrected by the constraints with low scores, a large fraction of the correct predictions gather around the lower score region, which leads to higher precision of the \ILP curve in the high recall region.
+%However, we find that the constraints in Chinese are more effective than that in the English dataset, which leads to more corrections of the \ILP method.
+We think this is because the constraints in Chinese are more effective than that in the English dataset, which leads to more corrections of the \ILP method.
+Therefore, since \ILP tend to leave the predictions corrected by the constraints with lower scores, a large fraction of the correct predictions gather around the lower score region, which leads to higher precision of the \ILP curve in the high recall region.
 
 
 %For DBpedia dataset, our method's performance is over \ILP method almost on all precision point. We think this is mainly because \ILP is a post-processing method which choose the most possible prediction that satisfy the constraints from the top three candidate results for every entity pairs, and this would drop some high score predictions, so for the high precision point, our SL method have better performance for both DBpedia dataset and Chinese Dataset. We also find that when recall in (0.3, 0.5), the \ILP is better than our SL method for Chinese Dataset, we think this is because adding constraints for Chinese dataset is much better than DBpedia dataset, the \ILP would drop more high score predictions and the right prediction corrected by \ILP is more likely appear at recall range (0.3, 0.5).
