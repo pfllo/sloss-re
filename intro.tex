@@ -4,16 +4,21 @@ Relation extraction (\RE) aims at identifying relation between entity pair from 
 
 In the literature, \RE is usually investigated in the distant supervision (\DS) paradigm, where datasets are automatically constructed by aligning existing \KB \emph{(subject, relation, object)} triples with a large corpus, and considers sentences containing the subject and object entity in a triple as evidence for the corresponding relation~\cite{mintz2009distant}.
 To alleviate the sentence level noise in the automatically constructed dataset, \RE is often considered in the multi-instance learning (\MIL) framework where all the sentences containing the target subject and object are packed into a \textbf{\emph{sentence bag}}, and relation extractors take in these sentences to predict the relation for this entity pair. 
-Following this framework, Zeng et al.~\shortcite{zeng2015distant} uses piecewise convolutional neural network (\PCNN) to handle the extraction task, Lin et al.~\shortcite{lin2016neural} introduces attention mechanism for better noise tolerance,
-%methods like graphic model~\cite{surdeanu2012multi}, neural network~\cite{lin2016neural} have been successfully used,
-Ye et al.~\shortcite{ye2017jointly} makes further improvements by learning co-occurrence tendency between relations via learning to rank.
-%In the literature, \RE is usually investigated in a classification style, where the classifier takes in sentences containing the mentions of the target entity pair, and output the predicted relations between them~\cite{hoffmann2011knowledge,surdeanu2012multi,zeng2015distant,lin2016neural}.
+In this framework, the best-performing extractors are the ones based on neural networks~\cite{zeng2015distant,lin2016neural,zeng2018large}.
+Apart from representation learning or denoising,
+Ye et al.~\shortcite{ye2017jointly} models the co-occurrence tendency between relations via learning to rank.
 
-Typically, most existing relation extractors relies only on input sentences to make predictions, and ignores the constraints required by each relation.
+While also focusing on the properties of relations, we, on the other hand, consider the  constraints required by each relation.
+%Typically, most existing relation extractors relies only on input sentences to make predictions, and ignores the constraints required by each relation.
 Take the relation \emph{Capital} for example, it expects its subject to be a \underline{country} and its object to be a \underline{city}.
 And in most cases, it also expects a city to be the capital of one country only.
 These kinds of constraints can help us identify inconsistent predictions and thereby improve the extraction performance.
 %Chen et al deals with this challenge by automatically collecting relation pairs that ... (and之前), and uses these entity pairs to implicitly captures the type and cardinality constraints.
+
+%Zeng et al.~\shortcite{zeng2015distant} uses piecewise convolutional neural network (\PCNN) to handle the extraction task, Lin et al.~\shortcite{lin2016neural} introduces attention mechanism for better noise tolerance,
+%methods like graphic model~\cite{surdeanu2012multi}, neural network~\cite{lin2016neural} have been successfully used,
+%Ye et al.~\shortcite{ye2017jointly} makes further improvements by learning co-occurrence tendency between relations via learning to rank.
+%In the literature, \RE is usually investigated in a classification style, where the classifier takes in sentences containing the mentions of the target entity pair, and output the predicted relations between them~\cite{hoffmann2011knowledge,surdeanu2012multi,zeng2015distant,lin2016neural}.
 
 However, properly utilizing these clues is non-trivial, since many \KBs do not have a well-defined typing system or a cardinality specification for target relations.
 %Chen et al~\shortcite{chen2014encoding} deals with this challenge by automatically collecting relation pairs that have the same subject or object type, and uses these relation pairs to implicitly captures the type and cardinality constraints.
