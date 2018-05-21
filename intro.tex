@@ -35,7 +35,7 @@ and could not be applied to online applications.
 To uniform the prediction procedure,
 we propose to incorporate these constraints by introducing a semantic loss to penalize inconsistent predictions during training.
 %which improves the prediction ability of the base model, and the prediction phase incurs no extra costs.
-Specifically, we consider the type and cardinality constraints as propositional logic constraints, and use the semantic loss framework~\cite{xu2017semantic} to convert them into a loss term.
+Specifically, we consider the type and cardinality constraints as propositional logic constraints, and use the semantic loss framework~\cite{xu2017semantic} to convert them into a loss.
 Compared to other methods of enforcing logical constraints like the teacher-student network~\cite{hu2016harnessing} that relies on fuzzy relaxation of the constraints, semantic loss possesses the precise meaning of the constraints and is fully differentiable since it directly uses the predicted probability to construct the loss.
 In this way, the base model is encouraged to find more textual clues when detecting conflicts, which leads to better prediction ability of the model, and the prediction phase incurs no extra costs.
 %the classification boundary is made more discriminative and therefore lead to better generalization ability of the model.

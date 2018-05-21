@@ -14,7 +14,8 @@
 \subsection{Base Model}
 \label{sec:base_model}
 %Briefly introduce the base model (PCNN).
-While our method is adapted to most existing relation extractors, in this paper, we take the attentive convolutional neural network~\cite{lin2016neural} as our base model, which is currently one of the most widely used extractor in \RE.
+While our method is adapted to most existing relation extractors, in this paper, we take the attentive convolutional neural network~\cite{lin2016neural} as our base model.
+%which is currently one of the most widely used extractor in \RE.
 It operates in the \MIL framework, specifically
 %that takes in a \textbf{\emph{sentence bag}} and outputs the relations between these two entities.
 %that takes in all the sentences mentioning the target subject and object, and output the relations between these two entities.
@@ -85,7 +86,7 @@ Thus we finally get 5 sub-category constraint sets $\bm{C^{\Phi}}$, where $\bm{\
 
 \subsection{Incorporate  Constraints for Training}
 \label{sec:loss_term}
-In this section, we demonstrate our method of converting the relation constraints into a loss using the Semantic Loss framework~\cite{xu2017semantic}.
+In this section, we demonstrate our method of converting the relation constraints into a loss using the semantic loss framework~\cite{xu2017semantic}.
 We also introduce a variant of our method to speed up the training process by sampling some constraints.
 
 \paragraph{Relation Constraint Loss}
@@ -105,11 +106,10 @@ Concretely, the semantic loss is defined as:
 %\end{small}
 %over variables $\bm X=\{X_1,...,X_n\}$, and a vector of probabilities $p$, where $p_i$ denotes the predicted probability of variable $X_i$: 
 where $\bm{C}$ is a set of constraints defined over variables $\bm{X}=\{X_1,...,X_n\}$, 
-$p_i$ is the predicted probability of $X_i$,
-specifically $X_i$ corresponds a single relation and $p_i$ is defined in Eq.~(\ref{Eq:compute_p}) in our work.
+$\bm{p}$ is the predicted probability vector of $\bm{X}$,
 $\bm x \models \bm{C}$ refers to the assignment $\bm{x} = \{x_1,...,x_n\}$ of variables $\bm X$ that satisfies the constraints in $\bm{C}$,
 and $i\colon\bm x \models X_i$ (or $i\colon\bm x\models \neg X_i$) refers to the indices $i$ where $x_i$ is set to true (or false) in assignment $\bm x$.
-
+Specifically $X_i$ corresponds a single relation and $\bm{p}$ is defined in Eq.~(\ref{Eq:compute_p}) in our work.
 %As for our type constraints, the variables $\bm{X}\in \{0,1\}^{2R}$, where $R$ is the number of relations,
 %are defined over a pair of  relations ($r_1$, $r_2$) that are assigned to 2 entity pairs ($subj_1$, $obj_1$) and ($subj_2$, $obj_2$) respectively.
 %Specifically, $X_i\in \bm{X}_{1...R}$ equals 1 only when $r_1$ is the $i^{th}$ relation,
@@ -213,8 +213,8 @@ Therefore, minimizing these semantic loss terms actually increases the likelihoo
 During training, we iterate by randomly selecting a mini-batch from the training set until converge, and adopt the Adam optimizer~\cite{kingma2014adam} to minimize the objective function.
 % To solve the optimization problem, we adopt Adam \cite{kingma2014adam} to minimize the objective function. For learning, we iterate by randomly selecting a mini-batch from the training set until converge.
 \paragraph{Simplified Semantic Loss}
-In Eq.~(\ref{seq:semantic_loss}), for each entity pair combination, we need to calculate the semantic loss for every $\bm x \models \bm{C}$, which would be time-consuming since there are many relation assignments that are consistent with the constraint set $\bm{C}$.
-However, among these assignments, only the gold standard relation assignment is the one that we desire.
+In Eq.~(\ref{seq:semantic_loss}), for each entity pair combination, we need to calculate the semantic loss for every $\bm x \models \bm{C}$, which would be time-consuming since there are many relation assignments that satisfy the constraint set $\bm{C}$.
+However, among these assignments, only the gold standard assignment is the one that we desire.
 Therefore, we simplifies Eq.~(\ref{seq:semantic_loss}) by only including the gold relation assignment and a few randomly sampled consistent assignments as supplements.
 With this simplification, we wish to speed up the training process with only minor drop in performance.
 
