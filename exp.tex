@@ -28,19 +28,21 @@ and the weight for cardinality constraints is 0.0005 for both the English and Ch
 \subsection{Experimental Results}
 %We evaluate PR-curve (briefly introduce the PR-curve) for SL, base model, ILP, simplified SL.
 Following previous work on \RE, we use the precision-recall curve as our evaluation criterion.
-We compare our semantic loss method (\SL) along with its simplified version (\SLsimple) with the base relation extractor (referred to as \base, see Sec.~\ref{sec:base_model}) and the \ILP method~\cite{chen2014encoding}, which uses \ILP to incorporate the relation constraints at the post-processing phase.
+We compare our semantic loss method (\SL) along with its simplified version (\SLsimple) with the base relation extractor (referred to as \base, see Sec.~\ref{sec:base_model}) and the \ILP method~\cite{chen2014encoding}.
+%which uses \ILP to incorporate the relation constraints at the post-processing phase.
 %The results on DBpedia Dataset and Chinese Dataset are showed in Figure 1 and Figure 2.
 \begin{figure}[h]
 	\centering
 	\begin{minipage}[t]{0.45\textwidth}
 		\centering
-		\includegraphics[width=7cm]{./result-figure/DBpedia-CNN-result.png}
+		\includegraphics[width=5.5cm]{./result-figure/DBpedia-CNN-result.png}
+		%\includegraphics[width=3.5cm]{./result-figure/Chinese-CNN-result.png}
 		\caption{Performance on English Dataset}
 		\label{fig:dbpedia}
 	\end{minipage}
 	\begin{minipage}[t]{0.45\textwidth}
 		\centering
-		\includegraphics[width=7cm]{./result-figure/Chinese-CNN-result.png}
+		\includegraphics[width=5.5cm]{./result-figure/Chinese-CNN-result.png}
 		\caption{Performance on Chinese Dataset}
 		\label{fig:chinese}
 	\end{minipage}
