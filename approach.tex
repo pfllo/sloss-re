@@ -100,7 +100,7 @@ Semantic loss is a general framework that can encode propositional logic constra
 %and derive a semantic loss to make the neural network automatically learning the symbolic knowledge. 
 %This loss function captures how close the neural network is to satisfying the constraints on its output. 
 
-Concretely, for each sub-category of constraint sets $\bm{C}^{\phi}$, our semantic loss for the combination of $i^{th}$ and $j^{th}$ entity pairs in a batch is defined as:
+Concretely, for each sub-category of constraint sets $\bm{C}^{\phi}$($\phi \in \bm{\Phi}$), our semantic loss for the combination of $i^{th}$ and $j^{th}$ entity pairs in a batch is defined as:
 %For example, the semantic loss between an exactly-one constraint $\alpha$ and a neural net output vector $p$ captures how close the prediction $p$ is to having exactly one output set to true(1), and all false(0), regardless of which output is correct.
 %We desire our semantic loss $L^{s}(\alpha, p)$ to be proportional to the negative log-probability of $\alpha$ being satisfied when sampling values according to $p$. More formally,
 %In \cite{xu2017semantic}, the semantic loss function is formed as follows,
@@ -112,7 +112,7 @@ Concretely, for each sub-category of constraint sets $\bm{C}^{\phi}$, our semant
 %\end{small}
 %over variables $\bm X=\{X_1,...,X_n\}$, and a vector of probabilities $p$, where $p_i$ denotes the predicted probability of variable $X_i$: 
 where $\bm{C}^{\phi}$ is a sub-category of constraint sets, defined over variables $\bm{X}=\{X_1,...,X_n\}$,
-each variable $X_m \in \bm{X}$ means a specific relation, 
+each variable $X_m \in \bm{X}$ represents a specific relation, 
 $\bm{p}^{\phi}_{ij}$ is the predicted probability vector of $\bm{X}$ derived by Eq.~\ref{Eq:compute_p},
 $\bm x \models \bm{C}$ refers to the assignment $\bm{x} = \{x_1,...,x_n\}$ of variables $\bm X$ that satisfies the constraints in $\bm{C}^{\phi}$,
 and $k\colon\bm x \models X_k$ (or $k\colon\bm x\models \neg X_k$) refers to the indices $k$ where $x_k$ is set to true (or false) in assignment $\bm x$.
@@ -136,7 +136,7 @@ and all $x_k\in \bm{x}$ are set to 0 when $r_1=r_2$.
 As for our cardinality constraints, the assignment $\bm x$ of variables $\bm{X}\in \{0,1\}^{|R|}$ is derived from one relation $r \in \bm{C}^{c}$, $c\in\{cs,co\}$. 
 Specifically, $x_k\in \bm{x}$ equals 1 only when $r$ is the $k^{th}$ relation.
 
-For any combination of two entity pairs in a batch, we use $\bm{p}_{ij}^{t}$ and $\bm{p}_{ij}^{c}$ in Eq.~(\ref{Eq:compute_p}) to denote the probability vector $\bm{p}^{\phi}_{ij}$ for type and cardinality constraints in Eq.~(\ref{seq:semantic_loss}), respectively.
+For the combination of $i^{th}$ and $j^{th}$ entity pairs in a batch, we use $\bm{p}_{ij}^{t}$ and $\bm{p}_{ij}^{c}$ in Eq.~(\ref{Eq:compute_p}) to denote the probability vector $\bm{p}^{\phi}_{ij}$ for type and cardinality constraints in Eq.~(\ref{seq:semantic_loss}), respectively.
 \begin{equation}
 \label{Eq:compute_p}
 %\bm{p}_{i} = \bm{p'}_{1i} + \bm{p'}_{2i} - \bm{p'}_{1i}*\bm{p'}_{2i};\;\; \bm{p}_{i} = \bm{p'}_{1i}*\bm{p'}_{2i}
@@ -146,7 +146,12 @@ where $\bm{p'}_i$ and $\bm{p'}_j$ represents the relation distribution outputs o
 $\odot$ is element-wise multiplier,
 $\bm{p}_{ij}^{t}(t \in \{ts, to, tso\})$ and $\bm{p}_{ij}^{c}(c \in \{cs, co\})$ denotes the predicted probability of variables $\bm{X}$ in the type and cardinality constraints, respectively.
 
-In Fig.~\ref{fig:example}, we demonstrate how to calculate the semantic loss for two entity pairs having the same object which satisfies the condition of $\bm{C}^{to}$.
+In Fig.~\ref{fig:example},
+we describe the semantic loss calculation for $C^{to}$.
+First, we get the relation distribution outputs $\bm{p'}_i$ and $\bm{p'}_j$ of our base model for the two entity pairs $<$\emph{Bard College, New York}$>$ and $<$\emph{AT\&T, New York}$>$, respectively,
+then we use Eq.~\ref{Eq:compute_p} to get the predicted probability $\bm{p}^{to}_{ij}$ of variables $\bm{X}$,
+finally, we feed $\bm{p}^{to}_{ij}$ and $\bm{C}^{to}$ into Eq.~\ref{seq:semantic_loss} and get our semantic loss $L^{s}(\bm{C}^{to}, \bm{p}^{to}_{ij})$.
+%we demonstrate how to calculate the semantic loss for two entity pairs having the same object which satisfies the condition of $\bm{C}^{to}$.
 \iffalse
 %We thereby define two semantic loss terms: $m^{co}L^{s}(\bm{C}^{co}, \bm{p})$ and $m^{cs}L^{s}(\bm{C}^{cs}, \bm{p})$, where $m^{co}$ and $m^{cs}$are 0-1 masks that are set to 1 %when $subj_1=subj_2 \land obj_1\neq obj_2$ and $subj_1\neq subj_2 \land obj_1=obj_2$ respectively.
 
@@ -216,8 +221,8 @@ Further, our total semantic loss is defined as:
 \end{equation}
 where $0\leq i < j < batch\_size$,
 $\lambda^{\phi}$ denotes the corresponding weight coefficient, 
-$m^{\phi}$ is a 0-1 mask which is set to 1 when the two entity pairs satisfies the conditions of $\bm{C}^{\phi}$,
-$\bm{\Phi}=\{ts,to,tso,cs,co\}$ as mentioned before.
+$m^{\phi}$ is a 0-1 mask which is set to 1 when the two entity pairs satisfies the conditions of $\bm{C}^{\phi}$.
+%$\bm{\Phi}=\{ts,to,tso,cs,co\}$ as mentioned before.
 %$\bm{p}_{ij}^{k} $ refers to the probability vector generated from Eq.~(\ref{Eq:compute_p}).
 
 Note that, for each loss term, all the relation assignment pairs that satisfies the corresponding constraints are included.
