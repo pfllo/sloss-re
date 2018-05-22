@@ -1,12 +1,12 @@
 \section{Introduction}
 
-Relation extraction (\RE) aims at identifying relation between entity pair from raw text, and its success can benefit  many knowledge base (\KB) related tasks like \KB population, question answering (\QA) and etc~\cite{suchanek2013advances}.
+Relation extraction (\RE) aims at identifying relationship between entity pair from raw text, and its success can benefit  many knowledge base (\KB) related tasks like \KB population, question answering (\QA) and etc~\cite{suchanek2013advances}.
 
-In the literature, \RE is usually investigated in the distant supervision (\DS) paradigm, where datasets are automatically constructed by aligning existing \KB \emph{(subject, relation, object)} triples with a large corpus, and considers sentences containing the subject and object entity in a triple as evidence for the corresponding relation~\cite{mintz2009distant}.
+In the literature, \RE is usually investigated in the distant supervision (\DS) paradigm, where datasets are automatically constructed by aligning existing \KB \emph{(subject, relation, object)} triples with a large corpus, and considering sentences containing the subject and object entity in a triple as evidence for the corresponding relation~\cite{mintz2009distant}.
 To alleviate the sentence level noise in the automatically constructed dataset, \RE is often considered in the multi-instance learning (\MIL) framework where all the sentences containing the target subject and object are packed into a \textbf{\emph{sentence bag}}, and relation extractors take in these sentences to predict the relation for this entity pair. 
 In this framework, the best-performing extractors are the ones based on neural networks~\cite{zeng2015distant,lin2016neural,zeng2018large}.
 Apart from representation learning or denoising,
-Ye et al.~\shortcite{ye2017jointly} models the co-occurrence tendency between relations via learning to rank.
+Ye et al.~\shortcite{ye2017jointly} further models the co-occurrence tendency between relations via learning to rank.
 
 While also focusing on the properties of relations, we, on the other hand, consider the  constraints required by each relation.
 %Typically, most existing relation extractors relies only on input sentences to make predictions, and ignores the constraints required by each relation.
@@ -32,7 +32,7 @@ and could not be applied to online applications.
 %clw's model operates on sentence level, which kind of deviates the multi-instance learning procedure, and therefore may introduce some performance drop.
 
 %To overcome the problems of \ILP, 
-To uniform the prediction procedure,
+To simplify the prediction procedure,
 we propose to incorporate these constraints by introducing a semantic loss to penalize inconsistent predictions during training.
 %which improves the prediction ability of the base model, and the prediction phase incurs no extra costs.
 Specifically, we consider the type and cardinality constraints as propositional logic constraints, and use the semantic loss framework~\cite{xu2017semantic} to convert them into a loss.

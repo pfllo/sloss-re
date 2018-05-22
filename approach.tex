@@ -14,12 +14,15 @@
 \subsection{Base Model}
 \label{sec:base_model}
 %Briefly introduce the base model (PCNN).
-While our method is adapted to most existing relation extractors, in this paper, we take the attentive convolutional neural network~\cite{lin2016neural} as our base model.
-%which is currently one of the most widely used extractor in \RE.
-It operates in the \MIL framework, specifically
+While our method can be adapted to most existing relation extractors, in this paper, 
+%we take the attentive convolutional neural network~\cite{lin2016neural} as our base model.
+we take the neural relation extractor of Lin et al.~\cite{lin2016neural} as our base model, 
+which is currently one of the most widely used extractor in \RE.
+Specifically, it operates in the \MIL framework, 
 %that takes in a \textbf{\emph{sentence bag}} and outputs the relations between these two entities.
 %that takes in all the sentences mentioning the target subject and object, and output the relations between these two entities.
-it uses convolutional neural network for sentence embedding, and an attention layer to selectively aggregate sentence embeddings into a sentence bag embedding, which is then fed to a softmax classifier to generate the predicted relation distribution. 
+and uses convolutional neural network for sentence embedding.
+Then, an attention layer is used to selectively aggregate sentence embeddings into a sentence bag embedding, which is then fed to a softmax classifier to generate the predicted relation distribution. 
 %\red{(YY: I changed the $\bm{p}$ to $\bm{r}$, because the SL equation has $\bm{p}$)}
 
 
@@ -41,8 +44,9 @@ it uses convolutional neural network for sentence embedding, and an attention la
 Our relation constraints are similar to those used by  Chen et al.~\shortcite{chen2014encoding}.
 Specially,
 %Following Chen et al.~\shortcite{chen2014encoding}, 
-our relation constraints are defined over each combination of two entity pairs:$(subj_1, r_1, obj_1)$ and $(subj_2,  r_2, obj_2)$
-(we use $subj$, $obj$ and $r$ to denote subject, object and relation for entity pair, respectively, in the rest of the paper).
+our relation constraints are defined over each combination of two entity pairs:$(subj_1, r_1, obj_1)$ and $(subj_2,  r_2, obj_2)$.
+\footnote{We use $subj$, $obj$ and $r$ to denote subject, object and relation for entity pair, respectively, in the rest of this paper.}
+%(we use $subj$, $obj$ and $r$ to denote subject, object and relation for entity pair, respectively, in the rest of the paper).
 We derive type constraints and cardinality constraints from existing KB to implicitly capture the expected type and cardinality requirements for the arguments of a relation.
 %details see Chen et al.~\shortcite{chen2014encoding}. 
 %\red{(YY: add the cite)}
@@ -61,7 +65,7 @@ $\bm{C}^{tso}$  if the subject type of one relation is the same as the object ty
 %finding relation pairs that can share the same subject ($C^s$), object ($C^o$), and those where the subject of one relation can be the object of the other ($C^{so}$).
 %Then, $\bm{C}^{ts}$, $\bm{C}^{to}$ and $\bm{C}^{tso}$ represents the constraints that we expect ($r_1$, $r_2$) of each combination of ($subj_1$, $r_1$, $obj_1$) and ($subj_2$, $r_2$, $obj_2$) to fall into $\bm{C}^{ts}$ when $subj_1=subj_2$, $\bm{C}^{to}$ when $obj_1=obj_2$ and $\bm{C}^{tso}$ when when $subj_1=obj_2$ or $subj_2=obj_1$, respectively.
 %Then, we expect the relations of all pairs of predicted \emph{(subject, relation, object)} triples to fall into $\bm{C}^{ts}$, $\bm{C}^{to}$ or $\bm{C}^{tso}$ when they share the same entity in either subject or object.
-The idea is that, if the predicted relations of two triples require the same entity to belong to different types, then at least one of the prediction must be wrong.
+The idea is that, if the predicted relations of two triples require the same entity to belong to different types, then at least one of the predictions must be wrong.
 %The idea is that, take $C^s$ for example, if the subject set of relation $R_1$ has a large intersection with those in $R_2$ (($R_1$, $R_2$) lies in $C^s$ ), then the expected subject type of $R_1$ and $R_2$ are likely to be the same. Therefore, if a pair of predicted relation $R_1'$ and $R_2'$ for two entity pairs share the same subject, which implies $R_1'$ and $R_2'$ have the same expected subject type, then ($R_1'$, $R_2'$) must lie in $C^s$. 
 %\red{luo: Hard to explain this clearly given limited space. Maybe we can delete the intuition part.}
 
@@ -82,12 +86,12 @@ Following this observation, we assign relation $r$ into $\bm{C}^{cs}$ (or $\bm{C
 
 %Subj-Cons: $r_1$ and $r_2$ can't have same subject. Obj-Cons means $r_1$ and $r_2$ can't have same object. Subj-Obj-Cons means $r_1$'s subject can't be $r_2$'s object or $r_2$'s subject can't be $r_1$'s object. Subj-Uni means if $r_1$ equals $r_2$, 
 
-Thus we finally get 5 sub-category constraint sets $\bm{C^{\Phi}}$, where $\bm{\Phi}=\{ts, to, tso, cs, co\}$
+Finally, we get 5 sub-categories of constraint sets $\bm{C}^{k}$, where $k\in\bm{\Phi}=\{ts, to, tso, cs, co\}$.
 
 \subsection{Incorporate  Constraints for Training}
 \label{sec:loss_term}
 In this section, we demonstrate our method of converting the relation constraints into a loss using the semantic loss framework~\cite{xu2017semantic}.
-We also introduce a variant of our method to speed up the training process by sampling some constraints.
+We also introduce a variant of our method to speed up the training process by constraint sampling.
 
 \paragraph{Relation Constraint Loss}
 %Describe semantic loss, and how to encode clw's constraints into semantic loss.
