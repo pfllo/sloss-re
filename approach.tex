@@ -114,15 +114,17 @@ where $\bm{C}$ is a set of constraints defined over variables $\bm{X}=\{X_1,...,
 $\bm{p}$ is the predicted probability vector of $\bm{X}$,
 $\bm x \models \bm{C}$ refers to the assignment $\bm{x} = \{x_1,...,x_n\}$ of variables $\bm X$ that satisfies the constraints in $\bm{C}$,
 and $i\colon\bm x \models X_i$ (or $i\colon\bm x\models \neg X_i$) refers to the indices $i$ where $x_i$ is set to true (or false) in assignment $\bm x$.
-Specifically
+%Specifically
 %$X_i$ corresponds a single relation, 
-$\bm{C}$, $\bm{p}$ and $\bm{x}$ is shown as $\bm{C}^{to}$, $\bm{p}^{to}_{ij}$ and $\bm{x}_m(m=1,2,...)$ in Fig.~\ref{fig:example}, respectively.
+%$\bm{C}$, $\bm{p}$ and $\bm{x}$ is shown as $\bm{C}^{to}$, $\bm{p}^{to}_{ij}$ and $\bm{x}_m(m=1,2,...)$ in Fig.~\ref{fig:example}, respectively.
 %As for our type constraints, the variables $\bm{X}\in \{0,1\}^{2R}$, where $R$ is the number of relations,
 %are defined over a pair of  relations ($r_1$, $r_2$) that are assigned to 2 entity pairs ($subj_1$, $obj_1$) and ($subj_2$, $obj_2$) respectively.
 %Specifically, $X_i\in \bm{X}_{1...R}$ equals 1 only when $r_1$ is the $i^{th}$ relation,
 %and $X_{R+i}\in \bm{X}_{R+1...2R}$ equals 1 only when $r_2$ is the $i^{th}$ relation.
 %We thereby define three semantic loss terms: $m^{ts}L^{s}(\bm{C}^{ts}, \bm{p})$, $m^{to}L^{s}(\bm{C}^{to}, \bm{p})$, $m^{tso}L^{s}(\bm{C}^{tso}, \bm{p})$, where $m^{ts}$, $m^{to}$, $m^{tso}$ are 0-1 masks that are set to 1 when $subj_1=subj_2$, $obj_1=obj_2$, $subj_1=obj_2$ respectively.
 %\red{(YY: version of type constraints)}
+
+
 
 As for our type constraints, the assignment $\bm x$ of variables $\bm{X}\in \{0,1\}^{|R|}$, where $|R|$ is the number of relations, 
 is derived from a pair of relations $(r_1, r_2) \in \bm{C}^{t}$, $t\in\{ts,to,tso\}$.
@@ -133,6 +135,16 @@ and all $x_i\in \bm{x}$ are set to 0 when $r_1=r_2$.
 
 As for our cardinality constraints, the assignment $\bm x$ of variables $\bm{X}\in \{0,1\}^{|R|}$ is derived from one relation $r \in \bm{C}^{c}$, $c\in\{cs,co\}$. 
 Specifically, $x_i\in \bm{x}$ equals 1 only when $r$ is the $i^{th}$ relation.
+
+For any combination of two entity pairs in a batch, we use $\bm{p}_{ij}^{t}$ and $\bm{p}_{ij}^{c}$ in Eq.~(\ref{Eq:compute_p}) to denote the probability vector $\bm{p}$ for type and cardinality constraints in Eq.~(\ref{seq:semantic_loss}), respectively.
+\begin{equation}
+\label{Eq:compute_p}
+%\bm{p}_{i} = \bm{p'}_{1i} + \bm{p'}_{2i} - \bm{p'}_{1i}*\bm{p'}_{2i};\;\; \bm{p}_{i} = \bm{p'}_{1i}*\bm{p'}_{2i}
+\bm{p}_{ij}^{t} = 1-(1-\bm{p'}_{i}) \odot (1-\bm{p'}_{j});\;\; \bm{p}_{ij}^{c} = \bm{p'}_{i} \odot \bm{p'}_{j}
+\end{equation}
+where $\bm{p'}_i$ and $\bm{p'}_j$ represents the relation distribution outputs of our base model for the two entity pairs,
+$\odot$ is element-wise multiplier,
+$\bm{p}_{ij}^{t}(t \in \{ts, to, tso\})$ and $\bm{p}_{ij}^{c}(c \in \{cs, co\})$ denotes the predicted probability of variables $\bm{X}$ in the type and cardinality constraints, respectively.
 
 \iffalse
 %We thereby define two semantic loss terms: $m^{co}L^{s}(\bm{C}^{co}, \bm{p})$ and $m^{cs}L^{s}(\bm{C}^{cs}, \bm{p})$, where $m^{co}$ and $m^{cs}$are 0-1 masks that are set to 1 %when $subj_1=subj_2 \land obj_1\neq obj_2$ and $subj_1\neq subj_2 \land obj_1=obj_2$ respectively.
@@ -164,9 +176,9 @@ Specifically, $x_i\in \bm{x}$ equals 1 only when $r$ is the $i^{th}$ relation.
 %What is the loss function?
 Here we introduce the learning and optimization details of our model. Our objective function consists of two parts:
 \begin{equation}
-	J(\theta) = J_{en}(\theta) + J_{SL}(\theta)
+	J(\theta) = J_{EN}(\theta) + J_{SL}(\theta)
 \end{equation}
-where  $J_{en}(\theta)$ is the original cross-entropy classification loss, and $J_{SL}(\theta)$ is our semantic loss.
+where  $J_{EN}(\theta)$ is the original cross-entropy classification loss, and $J_{SL}(\theta)$ is our semantic loss.
 
 %The cross-entropy loss defined as follows:
 %\begin{equation}
@@ -177,7 +189,7 @@ where  $J_{en}(\theta)$ is the original cross-entropy classification loss, and $
 %For any combination of two entity pair in a batch, we use the outputs of our base model to get the probability vector $\bm{p}$ in Eq.~\ref{seq:semantic_loss},
 %and thereby compute the semantic loss terms $m^{*}L^{s}(\bm{C}^{*}, \bm{p})$.
 %Here $m^{*}L^{s}(\bm{C}^{*}, \bm{p})$ denotes the sum of all the semantic loss terms defined in Sec.~\ref{sec:loss_term}.
-
+\iffalse
 For any combination of two entity pairs in a batch, we use $\bm{p}_{ij}^{t}$ and $\bm{p}_{ij}^{c}$ in Eq.~(\ref{Eq:compute_p}) to denote the probability vector $\bm{p}$ for type and cardinality constraints in Eq.~(\ref{seq:semantic_loss}), respectively.
 \begin{equation}
 \label{Eq:compute_p}
@@ -187,13 +199,13 @@ For any combination of two entity pairs in a batch, we use $\bm{p}_{ij}^{t}$ and
 where $\bm{p'}_i$ and $\bm{p'}_j$ represents the relation distribution outputs of our base model for the two entity pairs,
 $\odot$ is element-wise multiplier,
 $\bm{p}_{ij}^{t}(t \in \{ts, to, tso\})$ and $\bm{p}_{ij}^{c}(c \in \{cs, co\})$ denotes the predicted probability of variables $\bm{X}$ in the type and cardinality constraints, respectively.
-
-And then we compute the semantic loss terms $\lambda ^{k}m^{k}L^{s}(\bm{C}^{k}, \bm{p}_{ij}^{k}), (k \in \bm{\Phi})$ for each sub-category constraints over two entity pairs.
+\fi
+To get $J_{SL}(\theta)$, we first compute the semantic loss terms $\lambda ^{k}m^{k}L^{s}(\bm{C}^{k}, \bm{p}_{ij}^{k}), (k \in \bm{\Phi})$ for each sub-category constraints over two entity pairs.
 %($subj_1$, $obj_1$), ($subj_2$, $obj_2$).
-Here $\lambda^{k}$ denotes the corresponding weight coefficient and $m^{k}$ is a 0-1 mask which is set to 1 when the two entity pairs satisfies the conditions of $\bm{C}^{k}$.
+Here $\lambda^{k}$ denotes the corresponding weight coefficient, $m^{k}$ is a 0-1 mask which is set to 1 when the two entity pairs satisfies the conditions of $\bm{C}^{k}$ and $\bm{\Phi}=\{ts,to,tso,cs,co\}$ as mentioned before.
 %Then we use Eq.~\ref{seq:semantic_loss} to calculate $L^{s}(\alpha, p)$ on all combinations of two entity pair.
 
-We demonstrate how to calculate the semantic loss of two entity pairs having the same object which satisfies the condition of $\bm{C}^{to}$ in Fig.~\ref{fig:example}
+In Fig.~\ref{fig:example}, we demonstrate how to calculate the semantic loss for two entity pairs having the same object which satisfies the condition of $\bm{C}^{to}$.
 %where two entity pairs
 %are (Bard College, New York) and (AT\&T, New York), 
 %satisfy the conditions having the same object type of $\bm{C}^{to}$.
@@ -201,13 +213,13 @@ We demonstrate how to calculate the semantic loss of two entity pairs having the
 	\centering
 	\includegraphics[width=8cm]{./result-figure/example.pdf}
 	\vspace{-2em}
-	\caption{Calculate example}
+	\caption{{\small An Example of Semantic Loss Calculation for $C^{to}$}}
 	\label{fig:example}
 	\vspace{-1.5em}
 \end{figure}
 
 
-Finally our semantic loss is defined as follows:
+Then, our semantic loss is defined as follows:
 \begin{equation}
 	%J_{SL}(\theta) = \sum\limits_{i < j}{\lambda ^{*}m^{*}L^{s}(\bm{C}^{*}, \bm{p}_{ij})}
 	J_{SL}(\theta) = \sum\limits_{i < j}{\sum_{k\in \bm{\Phi}}{\lambda ^{k}m^{k}L^{s}(\bm{C}^{k}, \bm{p}_{ij}^{k})}}
