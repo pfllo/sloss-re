@@ -229,7 +229,10 @@ Our aggregated semantic loss is defined as:
 \end{equation}
 where $0\hspace{-0.3em}\leq\hspace{-0.3em}i\hspace{-0.3em}<\hspace{-0.3em}j\hspace{-0.3em}<\hspace{-0.3em}batch\_size$,
 $\lambda^{\phi}$ denotes the corresponding weight coefficient, 
-$m^{\phi}$ is a 0-1 mask which is set to 1 when $\bm{C}^{\phi}$ can be applied to the entity pairs $i$ and $j$.
+$m^{\phi}$ is a 0-1 mask which is set to 1 when $\bm{C}^{\phi}$ can be applied to the entity pairs $i$ and $j$,
+specifically, $m^{ts}$(or $m^{to}$)$=1$ when $subj_i=subj_j$ (or $obj_i=obj_j$), 
+$m^{tso}=1$ when $subj_i=obj_j \vee subj_j=obj_i$, 
+$m^{cs}$(or $m^{co}$)$=1$ when $subj_i\neq subj_j \wedge obj_i=obj_j$(or $subj_i=subj_j \wedge obj_i\neq obj_j$)
 % the two entity pairs satisfies the conditions of $\bm{C}^{\phi}$.
 %$\bm{\Phi}=\{ts,to,tso,cs,co\}$ as mentioned before.
 %$\bm{p}_{ij}^{k} $ refers to the probability vector generated from Eq.~(\ref{Eq:compute_p}).
