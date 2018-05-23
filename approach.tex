@@ -13,7 +13,7 @@
 %Briefly introduce the base model (PCNN).
 While our method can be adapted to most existing relation extractors, in this paper, 
 %we take the attentive convolutional neural network~\cite{lin2016neural} as our base model.
-we take the neural relation extractor of Lin et al.~\cite{lin2016neural} as our base model, 
+we take the neural relation extractor of Lin et al.~\shortcite{lin2016neural} as our base model, 
 which is currently one of the most widely used extractor in \RE.
 Specifically, it operates in the \MIL framework, 
 %that takes in a \textbf{\emph{sentence bag}} and outputs the relations between these two entities.
@@ -92,7 +92,7 @@ Finally, we get 5 sub-categories of constraint sets $\bm{C}^{\phi}$, where $\phi
 \subsection{Incorporate  Constraints for Training}
 \label{sec:loss_term}
 In this section, we demonstrate our method of converting the relation constraints into a loss using the semantic loss framework~\cite{xu2017semantic}.
-We also introduce a variant of our method to speed up the training process by constraint sampling.
+We also introduce a variant of our method to speed up the training process by sampling constraints.
 
 \paragraph{Relation Constraint Loss}
 %Describe semantic loss, and how to encode clw's constraints into semantic loss.
@@ -223,13 +223,13 @@ Further, our total semantic loss is defined as:
 	%J_{SL}(\theta) = \sum\limits_{i < j}{\lambda ^{*}m^{*}L^{s}(\bm{C}^{*}, \bm{p}_{ij})}
 	J_{SL}(\theta) = \sum\limits_{i < j}{\sum_{\phi \in \bm{\Phi}}{\lambda ^{\phi}m^{\phi}L^{s}(\bm{C}^{\phi}, \bm{p}_{ij}^{\phi})}}
 \end{equation}
-where $0\leq i < j < batch\_size$,
+where $0\hspace{-0.3em}\leq\hspace{-0.3em}i\hspace{-0.3em}<\hspace{-0.3em}j\hspace{-0.3em}<\hspace{-0.3em}batch\_size$,
 $\lambda^{\phi}$ denotes the corresponding weight coefficient, 
 $m^{\phi}$ is a 0-1 mask which is set to 1 when the two entity pairs satisfies the conditions of $\bm{C}^{\phi}$.
 %$\bm{\Phi}=\{ts,to,tso,cs,co\}$ as mentioned before.
 %$\bm{p}_{ij}^{k} $ refers to the probability vector generated from Eq.~(\ref{Eq:compute_p}).
 
-Note that, for each loss term, all the relation assignment pairs that satisfies the corresponding constraints are included.
+Note that, for each loss term, all the relation assignment pairs that satisfy the corresponding constraints are included.
 Therefore, minimizing these semantic loss terms actually increases the likelihood of all the relation predictions that satisfies our relation constraints.
 
 During training, we iterate by randomly selecting a mini-batch from the training set until converge, and adopt the Adam optimizer~\cite{kingma2014adam} to minimize the objective function.
