@@ -72,13 +72,16 @@ However, with the help of relation constraints during training, our semantic los
 As shown in Fig.~\ref{fig:dbpedia}, in the English dataset,
 \SL gets a comparable performance with \ILP in the high precision region, and performs better than \ILP after 0.15 recall.
 We think the performance improvement comes from the fact that \SL functions during training and \ILP only acts as a post-processor.
-Therefore, \SL can encourage the base model to find more textual clues when detecting conflicts, while \ILP can only find the most probable relation assignment that satisfies the constraints based on the output scores of the base model, which will possibly drop some high-score predictions and thus still leave the correct relation with a low score.
+Therefore, \SL can improve the performance of base model by encouraging base model to find more textual clues when detecting conflicts, while \ILP can only find the most probable relation assignment that satisfies the constraints based on the output of the base model.
+
+%Therefore, \SL can encourage the base model to find more textual clues when detecting conflicts, while \ILP can only find the most probable relation assignment that satisfies the constraints based on the output scores of the base model, which will possibly drop some high-score predictions and thus still leave the correct relation with a low score.
 
 %For the Chinese dataset, as shown in Fig. ~\ref{fig:chinese}, we can see that \SL performs better in the high precision region.
 As for the Chinese dataset, as shown in Fig.~\ref{fig:chinese}, we can see that \SL obtains superior performance in the high precision region, but \ILP performs better in the lower precision region.
 %which is also caused by the fact that \ILP tend to leave the predictions corrected by the constraints with low scores.
 %However, we find that the constraints in Chinese are more effective than that in the English dataset, which leads to more corrections of the \ILP method.
 This is because that the constraints in Chinese are more effective than that in the English dataset, which leads to more corrections of the \ILP method.
+%Therefore, since \ILP tends to correct predictions by dropping some high-score predictions of base model and leaving 
 Therefore, since \ILP tends to leave the predictions corrected by the constraints with lower scores, a large fraction of the correct predictions gather around the lower score region, which leads to higher precision of the \ILP curve in the high recall region.
 
 
