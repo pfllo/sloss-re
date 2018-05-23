@@ -91,8 +91,9 @@ Finally, we get 5 sub-categories of constraint sets $\bm{C}^{\phi}$, where $\phi
 
 \subsection{Incorporate  Constraints for Training}
 \label{sec:loss_term}
-In this section, we demonstrate our method of converting the relation constraints into a loss using the semantic loss framework~\cite{xu2017semantic}.
-We also introduce a variant of our method to speed up the training process by sampling constraints.
+We demonstrate convert the relation constraints into a loss using the semantic loss framework~\cite{xu2017semantic}.
+To speed up training, we also introduce a variant using sampling constraints.
+%We also introduce a variant of our method to speed up the training process by sampling constraints.
 
 \paragraph{Relation Constraint Loss}
 %Describe semantic loss, and how to encode clw's constraints into semantic loss.
@@ -115,7 +116,7 @@ where $\bm{C}^{\phi}$ is defined over variables $\bm{X}=\{X_1,...,X_{|R|}\}$,
 each variable $X_m \in \bm{X}$ represents a specific relation,
 $|R|$ is the number of relations,
 $\bm{p}^{\phi}_{ij}$ is the predicted probability vector of $\bm{X}$ derived by Eq.~\ref{Eq:compute_p},
-$\bm x \models \bm{C}$ refers to the assignment $\bm{x} = \{x_1,...,x_{|R|}\}$ of variables $\bm X$ that satisfies the constraints in $\bm{C}^{\phi}$,
+$\bm x \models \bm{C}^{\phi}$ refers to the assignment $\bm{x} = \{x_1,...,x_{|R|}\}$ of variables $\bm X$ that satisfies the constraints in $\bm{C}^{\phi}$,
 and $k\colon\bm x \models X_k$ (or $k\colon\bm x\models \neg X_k$) refers to the indices $k$ where $x_k$ is set to true (or false) in assignment $\bm x$.
 %Specifically
 %$X_i$ corresponds a single relation, 
@@ -151,12 +152,13 @@ $\odot$ is element-wise multiplier,
 $\bm{p}_{ij}^{t}(t \in \{ts, to, tso\})$ and $\bm{p}_{ij}^{c}(c \in \{cs, co\})$ denotes the predicted probability of variables $\bm{X}$ in the type and cardinality constraints, respectively.
 
 In Fig.~\ref{fig:example},
-we describe the semantic loss calculation for $C^{to}$.
+we describe the semantic loss calculation for $\bm{C}^{to}$.
 First, we get the relation distribution outputs $\bm{p'}_i$ and $\bm{p'}_j$ of our base model for the two entity pairs.
 % $<$\emph{Bard College, New York}$>$ and $<$\emph{AT\&T, New York}$>$, respectively,
 Then we use Eq.~\ref{Eq:compute_p} to get the predicted probability $\bm{p}^{to}_{ij}$ of variables $\bm{X}$.
 Finally, we feed $\bm{p}^{to}_{ij}$ and $\bm{C}^{to}$ into Eq.~\ref{seq:semantic_loss} and get our semantic loss $L^{s}(\bm{C}^{to}, \bm{p}^{to}_{ij})$.
-$\bm{x}_{1/2}$ are assignments to $\bm{X}$ derived from the corresponding entity pairs in $\bm{C}^{to}$.
+$\bm{x}_{1\,/\,2}$ are assignments to $\bm{X}$ derived from the corresponding entity pairs in $\bm{C}^{to}$.
+
 %we demonstrate how to calculate the semantic loss for two entity pairs having the same object which satisfies the condition of $\bm{C}^{to}$.
 \iffalse
 %We thereby define two semantic loss terms: $m^{co}L^{s}(\bm{C}^{co}, \bm{p})$ and $m^{cs}L^{s}(\bm{C}^{cs}, \bm{p})$, where $m^{co}$ and $m^{cs}$are 0-1 masks that are set to 1 %when $subj_1=subj_2 \land obj_1\neq obj_2$ and $subj_1\neq subj_2 \land obj_1=obj_2$ respectively.
@@ -214,7 +216,7 @@ where  $J_{EN}(\theta)$ is the original cross-entropy classification loss, and $
 	\centering
 	\includegraphics[width=8cm]{./result-figure/example.pdf}
 	\vspace{-2em}
-	\caption{{\small An Example of Semantic Loss Calculation for $C^{to}$}}
+	\caption{{\small An Example of Semantic Loss Calculation for\hspace{0.1em}$\bm{C}^{to}$}}
 	\label{fig:example}
 	\vspace{-1.5em}
 \end{figure}
