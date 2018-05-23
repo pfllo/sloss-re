@@ -157,7 +157,7 @@ First, we get the relation distribution outputs $\bm{p'}_i$ and $\bm{p'}_j$ of o
 % $<$\emph{Bard College, New York}$>$ and $<$\emph{AT\&T, New York}$>$, respectively,
 Then we use Eq.~\ref{Eq:compute_p} to get the predicted probability $\bm{p}^{to}_{ij}$ of variables $\bm{X}$.
 Finally, we feed $\bm{p}^{to}_{ij}$ and $\bm{C}^{to}$ into Eq.~\ref{seq:semantic_loss} and get our semantic loss $L^{s}(\bm{C}^{to}, \bm{p}^{to}_{ij})$.
-$\bm{x}_{1\,/\,2}$ are assignments to $\bm{X}$ derived from the corresponding entity pairs in $\bm{C}^{to}$.
+$\bm{x}_{1\,/\,2}$ are assignments to $\bm{X}$ derived from the corresponding relation pairs in $\bm{C}^{to}$.
 
 %we demonstrate how to calculate the semantic loss for two entity pairs having the same object which satisfies the condition of $\bm{C}^{to}$.
 \iffalse
