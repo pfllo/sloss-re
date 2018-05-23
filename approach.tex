@@ -41,7 +41,7 @@ Then, an attention layer is used to selectively aggregate sentence embeddings in
 Our relation constraints are similar to those used by  Chen et al.~\shortcite{chen2014encoding}.
 Specially,
 %Following Chen et al.~\shortcite{chen2014encoding}, 
-our relation constraints are defined over each combination of two entity pairs:$(subj_1, r_1, obj_1)$ and $(subj_2,  r_2, obj_2)$.
+our relation constraints are defined over each combination of two triples: $(subj_i, r_i, obj_i)$ and $(subj_j,  r_j, obj_j)$.
 \footnote{We use $subj$, $obj$ and $r$ to denote subject, object and relation for entity pair, respectively, in the rest of this paper.}
 %(we use $subj$, $obj$ and $r$ to denote subject, object and relation for entity pair, respectively, in the rest of the paper).
 We derive type constraints and cardinality constraints from existing KB to implicitly capture the expected type and cardinality requirements for the arguments of a relation.
@@ -56,8 +56,8 @@ We derive type constraints and cardinality constraints from existing KB to impli
 %Due to the lack of well-defined typing systems in most \KBs, determining the expected argument type of each relation with appropriate granularity is usually a hard problem.
 %Generally, the argument types of the correct predictions should be consistent with each other.
 %Similar to Chen et al.~\shortcite{chen2014encoding}, we also use entity sharing between relations to implicitly capture the expected argument type of each relation.
-If the subject (or object) set of relation $r_1$ in \KB has a large intersection with those of $r_2$, then we consider $r_1$ and $r_2$ to have the same expected subject (or object) type.
-We thereby assign relation pairs ($r_1$, $r_2$) into $\bm{C}^{ts}$ (or $\bm{C}^{to}$) if they have the same subject (or object) type,
+If the subject (or object) set of relation $r_i$ in \KB has a large intersection with those of $r_j$, then we consider $r_i$ and $r_j$ to have the same expected subject (or object) type.
+We thereby assign relation pairs ($r_i$, $r_j$) into $\bm{C}^{ts}$ (or $\bm{C}^{to}$) if they have the same subject (or object) type,
 % $\bm{C}^{to}$ if they have the same object type, 
 $\bm{C}^{tso}$  if the subject type of one relation is the same as the object type of the other.
 %We thereby collect relation pairs that have the same subject type ($\bm{C}^{ts}$), object type ($\bm{C}^{to}$), 
@@ -100,21 +100,22 @@ Semantic loss is a general framework that can encode propositional logic constra
 %and derive a semantic loss to make the neural network automatically learning the symbolic knowledge. 
 %This loss function captures how close the neural network is to satisfying the constraints on its output. 
 
-Concretely, for each sub-category of constraint sets $\bm{C}^{\phi}$($\phi \in \bm{\Phi}$), our semantic loss for the combination of $i^{th}$ and $j^{th}$ entity pairs in a batch is defined as:
+Concretely, in our work, for each sub-category of constraint sets $\bm{C}^{\phi}$($\phi \in \bm{\Phi}$), our semantic loss for the combination of the $i^{th}$ and $j^{th}$ entity pairs in a batch is defined as:
 %For example, the semantic loss between an exactly-one constraint $\alpha$ and a neural net output vector $p$ captures how close the prediction $p$ is to having exactly one output set to true(1), and all false(0), regardless of which output is correct.
 %We desire our semantic loss $L^{s}(\alpha, p)$ to be proportional to the negative log-probability of $\alpha$ being satisfied when sampling values according to $p$. More formally,
 %In \cite{xu2017semantic}, the semantic loss function is formed as follows,
 %\begin{small}
 \begin{equation}
 \label{seq:semantic_loss}
-	L^{s}(\bm{C}^{\phi}, \bm{p}^{\phi}_{ij}) = -log\sum\limits_{\bm x\models\bm{C}^{\phi}}\prod\limits_{k:\bm x\models X_k}p^{\phi}_{ijk}\prod\limits_{k:\bm x\models \neg X_k}(1-p^{\phi}_{ijk})
+	L^{s}(\bm{C}^{\phi}, \bm{p}^{\phi}_{ij}) = -\log\hspace{-0.5em}\sum\limits_{\bm x\models\bm{C}^{\phi}}\prod\limits_{k:\bm x\models X_k}\hspace{-0.5em}p^{\phi}_{ijk}\hspace{-0.9em}\prod\limits_{k:\bm x\models \neg X_k}\hspace{-0.7em}(1-p^{\phi}_{ijk})
 \end{equation}
 %\end{small}
 %over variables $\bm X=\{X_1,...,X_n\}$, and a vector of probabilities $p$, where $p_i$ denotes the predicted probability of variable $X_i$: 
-where $\bm{C}^{\phi}$ is a sub-category of constraint sets, defined over variables $\bm{X}=\{X_1,...,X_n\}$,
-each variable $X_m \in \bm{X}$ represents a specific relation, 
+where $\bm{C}^{\phi}$ is defined over variables $\bm{X}=\{X_1,...,X_{|R|}\}$,
+each variable $X_m \in \bm{X}$ represents a specific relation,
+$|R|$ is the number of relations,
 $\bm{p}^{\phi}_{ij}$ is the predicted probability vector of $\bm{X}$ derived by Eq.~\ref{Eq:compute_p},
-$\bm x \models \bm{C}$ refers to the assignment $\bm{x} = \{x_1,...,x_n\}$ of variables $\bm X$ that satisfies the constraints in $\bm{C}^{\phi}$,
+$\bm x \models \bm{C}$ refers to the assignment $\bm{x} = \{x_1,...,x_{|R|}\}$ of variables $\bm X$ that satisfies the constraints in $\bm{C}^{\phi}$,
 and $k\colon\bm x \models X_k$ (or $k\colon\bm x\models \neg X_k$) refers to the indices $k$ where $x_k$ is set to true (or false) in assignment $\bm x$.
 %Specifically
 %$X_i$ corresponds a single relation, 
@@ -126,14 +127,17 @@ and $k\colon\bm x \models X_k$ (or $k\colon\bm x\models \neg X_k$) refers to the
 %We thereby define three semantic loss terms: $m^{ts}L^{s}(\bm{C}^{ts}, \bm{p})$, $m^{to}L^{s}(\bm{C}^{to}, \bm{p})$, $m^{tso}L^{s}(\bm{C}^{tso}, \bm{p})$, where $m^{ts}$, $m^{to}$, $m^{tso}$ are 0-1 masks that are set to 1 when $subj_1=subj_2$, $obj_1=obj_2$, $subj_1=obj_2$ respectively.
 %\red{(YY: version of type constraints)}
 
-As for our type constraints, the assignment $\bm x$ of variables $\bm{X}\in \{0,1\}^{|R|}$, where $|R|$ is the number of relations, 
-is derived from a pair of relations $(r_1, r_2) \in \bm{C}^{t}$, $t\in\{ts,to,tso\}$.
+As for our type constraints, an assignment $\bm x \models \bm{C}^t$, $t\in\{ts,to,tso\}$, is derived from a relation pair $(r_i, r_j) \in \bm{C}^{t}$, which corresponds to a relation assignemnt to entity pair $i$ and $j$.
+%an assignment $\bm x$ of variables $\bm{X}\in \{0,1\}^{|R|}$, where $|R|$ is the number of relations, 
+%is derived from a pair of relations $(r_1, r_2) \in \bm{C}^{t}$, $t\in\{ts,to,tso\}$.
 %\cup \bm{C}^{to} \cup \bm{C}^{tso}$. 
 %Specifically, $X_i, X_j\in \bm{X}_{1...R}, i\neq j$ equals 1 only when $r_1$ is the $i^{th}$ relation, and $r_2$ is the $j^{th}$ relation.
-Specifically, $x_k\in \bm{x}$ equals 1 only when $r_1$ or $r_2$ is the $k^{th}$ relation,
-and all $x_k\in \bm{x}$ are set to 0 when $r_1=r_2$.
+Specifically, $x_k\in \bm{x}$ equals 1 only when $r_i$ or $r_j$ is the $k^{th}$ relation.
+Relation pairs where $r_i=r_j$ are excluded.
+%and all $x_k\in \bm{x}$ are set to 0 when $r_1=r_2$.
 
-As for our cardinality constraints, the assignment $\bm x$ of variables $\bm{X}\in \{0,1\}^{|R|}$ is derived from one relation $r \in \bm{C}^{c}$, $c\in\{cs,co\}$. 
+As for our cardinality constraints, an assignment $\bm x \models \bm{C}^c$, $c\in\{cs,co\}$, is derived from a relation $r \in \bm{C}^{c}$, where entity pair $i$ and $j$ are assigned the same relation $r$.
+%an assignment $\bm x$ of variables $\bm{X}\in \{0,1\}^{|R|}$ is derived from one relation $r \in \bm{C}^{c}$, $c\in\{cs,co\}$. 
 Specifically, $x_k\in \bm{x}$ equals 1 only when $r$ is the $k^{th}$ relation.
 
 For the combination of $i^{th}$ and $j^{th}$ entity pairs in a batch, we use $\bm{p}_{ij}^{t}$ and $\bm{p}_{ij}^{c}$ in Eq.~(\ref{Eq:compute_p}) to denote the probability vector $\bm{p}^{\phi}_{ij}$ for type and cardinality constraints in Eq.~(\ref{seq:semantic_loss}), respectively.
