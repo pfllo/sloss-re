@@ -157,7 +157,7 @@ First, we get the relation distribution outputs $\bm{p'}_i$ and $\bm{p'}_j$ of o
 % $<$\emph{Bard College, New York}$>$ and $<$\emph{AT\&T, New York}$>$, respectively,
 Then we use Eq.~\ref{Eq:compute_p} to get the predicted probability $\bm{p}^{to}_{ij}$ of variables $\bm{X}$.
 Finally, we feed $\bm{p}^{to}_{ij}$ and $\bm{C}^{to}$ into Eq.~\ref{seq:semantic_loss} and get our semantic loss $L^{s}(\bm{C}^{to}, \bm{p}^{to}_{ij})$.
-$\bm{x}_{1\,/\,2}$ are assignments to $\bm{X}$ derived from the corresponding entity pairs in $\bm{C}^{to}$.
+$\bm{x}_{1\,/\,2}$ are assignments to $\bm{X}$ derived from the corresponding relation pairs in $\bm{C}^{to}$.
 
 %we demonstrate how to calculate the semantic loss for two entity pairs having the same object which satisfies the condition of $\bm{C}^{to}$.
 \iffalse
@@ -192,7 +192,7 @@ Here we introduce the learning and optimization details of our model. Our object
 \begin{equation}
 	J(\theta) = J_{EN}(\theta) + J_{SL}(\theta)
 \end{equation}
-where  $J_{EN}(\theta)$ is the original cross-entropy classification loss, and $J_{SL}(\theta)$ is our total semantic loss.
+where  $J_{EN}(\theta)$ is the original cross-entropy  loss, and $J_{SL}(\theta)$ is our aggregated semantic loss.
 
 %The cross-entropy loss defined as follows:
 %\begin{equation}
@@ -222,14 +222,15 @@ where  $J_{EN}(\theta)$ is the original cross-entropy classification loss, and $
 \end{figure}
 
 
-Further, our total semantic loss is defined as:
+Our aggregated semantic loss is defined as:
 \begin{equation}
 	%J_{SL}(\theta) = \sum\limits_{i < j}{\lambda ^{*}m^{*}L^{s}(\bm{C}^{*}, \bm{p}_{ij})}
 	J_{SL}(\theta) = \sum\limits_{i < j}{\sum_{\phi \in \bm{\Phi}}{\lambda ^{\phi}m^{\phi}L^{s}(\bm{C}^{\phi}, \bm{p}_{ij}^{\phi})}}
 \end{equation}
 where $0\hspace{-0.3em}\leq\hspace{-0.3em}i\hspace{-0.3em}<\hspace{-0.3em}j\hspace{-0.3em}<\hspace{-0.3em}batch\_size$,
 $\lambda^{\phi}$ denotes the corresponding weight coefficient, 
-$m^{\phi}$ is a 0-1 mask which is set to 1 when the two entity pairs satisfies the conditions of $\bm{C}^{\phi}$.
+$m^{\phi}$ is a 0-1 mask which is set to 1 when $\bm{C}^{\phi}$ can be applied to the entity pairs $i$ and $j$.
+% the two entity pairs satisfies the conditions of $\bm{C}^{\phi}$.
 %$\bm{\Phi}=\{ts,to,tso,cs,co\}$ as mentioned before.
 %$\bm{p}_{ij}^{k} $ refers to the probability vector generated from Eq.~(\ref{Eq:compute_p}).
 
