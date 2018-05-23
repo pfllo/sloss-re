@@ -240,7 +240,6 @@ $m^{cs}$(or $m^{co}$)$=1$ when $subj_i\neq subj_j \wedge obj_i=obj_j$(or $subj_i
 Note that, for each loss term, all the relation assignment pairs that satisfy the corresponding constraints are included.
 Therefore, minimizing these semantic loss terms actually increases the likelihood of all the relation predictions that satisfies our relation constraints.
 
-During training, we iterate by randomly selecting a mini-batch from the training set until converge, and adopt the Adam optimizer~\cite{kingma2014adam} to minimize the objective function.
 % To solve the optimization problem, we adopt Adam \cite{kingma2014adam} to minimize the objective function. For learning, we iterate by randomly selecting a mini-batch from the training set until converge.
 \paragraph{Simplified Semantic Loss}
 In Eq.~(\ref{seq:semantic_loss}), for each entity pair combination, we need to calculate the semantic loss for every $\bm x \models \bm{C}^{\phi}$, which would be time-consuming since there are many relation assignments that satisfy the constraint set $\bm{C}^{\phi}$.
