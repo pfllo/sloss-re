@@ -20,7 +20,7 @@ These kinds of constraints can help us identify inconsistent predictions and the
 %Ye et al.~\shortcite{ye2017jointly} makes further improvements by learning co-occurrence tendency between relations via learning to rank.
 %In the literature, \RE is usually investigated in a classification style, where the classifier takes in sentences containing the mentions of the target entity pair, and output the predicted relations between them~\cite{hoffmann2011knowledge,surdeanu2012multi,zeng2015distant,lin2016neural}.
 
-However, properly utilizing these clues is non-trivial, since many \KBs do not have a well-defined typing system or a cardinality specification for target relations.
+However, properly utilizing these constraints is non-trivial, since many \KBs do not have a well-defined typing system or a cardinality specification for target relations.
 %Chen et al~\shortcite{chen2014encoding} deals with this challenge by automatically collecting relation pairs that have the same subject or object type, and uses these relation pairs to implicitly captures the type and cardinality constraints.
 Chen et al~\shortcite{chen2014encoding} deals with this challenge by automatically collecting relation pairs that have the same subject or object type to implicitly capture the type constraints, and relations that can have multiple subjects (or objects) given a specific object (or subject) to capture cardinality constraints.
 Then, they use  integer linear programming (\ILP) to resolve the predictions that are inconsistent regarding the constraints.
